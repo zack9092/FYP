@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".LoginActivity">
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="UserName"
+        android:ems="10"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="70dp"
+        android:singleLine="true"
+        app:met_iconRight="@drawable/ic_action_name"
+        />
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/userPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:ems="10"
+        android:layout_centerHorizontal="true"
+        android:layout_alignTop="@+id/userName"
+        android:layout_marginTop="60dp"
+        android:singleLine="true"
+        app:met_iconRight="@drawable/ic_lock"
+        />
+
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/userPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:ems="8"
+        android:text="Login"
+        android:textAllCaps="false" />
+
+
+</RelativeLayout>
