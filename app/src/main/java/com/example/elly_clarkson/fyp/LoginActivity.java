@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,8 +26,9 @@ import retrofit2.Retrofit;
 public class LoginActivity extends AppCompatActivity {
     MaterialEditText login_userName,login_userPassword;
     Button loginButton;
-    CompositeDisposable compositeDisposable= new CompositeDisposable();
-    IMyService iMyService;
+    public static CompositeDisposable compositeDisposable= new CompositeDisposable();
+    public static IMyService iMyService;
+    boolean logIn = false;
 
     protected void onStop(){
         compositeDisposable.clear();
@@ -44,8 +47,9 @@ public class LoginActivity extends AppCompatActivity {
     loginButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
-            loginUser(login_userName.getText().toString(), login_userPassword.getText().toString());
+            try{
+            loginUser(login_userName.getText().toString(), login_userPassword.getText().toString());}
+            catch(Exception e){}
 
         }
     });
@@ -53,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void loginUser(String userName, String password) {
+    private void loginUser(String userName, String password) throws Exception{
         if(TextUtils.isEmpty(userName)){
             Toast.makeText(this, "User name cannot be null or empty", Toast.LENGTH_SHORT).show();
             return;
@@ -67,10 +71,30 @@ public class LoginActivity extends AppCompatActivity {
             public void accept(String res) throws Exception {
                 Toast.makeText(LoginActivity.this, ""+res, Toast.LENGTH_SHORT).show();
                 if(res.contains("success")) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    if(logIn==false) {
+                        logIn = true;
+                        Intent intent = new Intent();
+                        intent.setClass(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
                 }
             }
-        }));
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                Toast.makeText(LoginActivity.this, "Cannot connect to the server", Toast.LENGTH_SHORT).show();
+                throwable.printStackTrace();
+            }}));
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 }

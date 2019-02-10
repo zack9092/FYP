@@ -9,9 +9,9 @@
   "author": "KKL",
   "license": "ISC",
   "dependencies": {
-    "Express": "^3.0.1",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "mongodb": "^3.1.13"
+    "mongodb": "^3.1.13",
+    "path": "^0.12.7"
   }
 }
