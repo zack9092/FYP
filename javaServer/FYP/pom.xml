@@ -27,6 +27,13 @@
       <artifactId>pcap4j-packetfactory-static</artifactId>
       <version>1.7.5</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+    <version>4.5.2</version>
+</dependency>
+
     </dependencies>
     <!-- https://mvnrepository.com/artifact/org.json/json -->
 

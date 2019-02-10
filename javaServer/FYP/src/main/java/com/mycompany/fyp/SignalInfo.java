@@ -17,7 +17,7 @@ public class SignalInfo {
     
     public JSONObject getJSON(){
         JSONObject obj = new JSONObject();
-        obj.put("destinationMac", getDestinationMac());
+        obj.put("responsibleRouter", getDestinationMac());
         obj.put("RSSI", getRSSI());
         return obj;
     }    

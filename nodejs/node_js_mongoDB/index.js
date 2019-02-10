@@ -33,11 +33,48 @@ MongoClient.connect(url,function(err,client){
 							console.log('Wrong password');
 						}
 					});
-			
+
 				}
 			});
-				
+
 			});
+
+			//Receiving JSON from java Server
+			app.post('/devicesPosition',function(req,res,next){
+				var post_data=req.body;
+				console.log(post_data);
+				var devices = JSON.parse(post_data.details);
+				console.log(devices);
+				var tmpTotalPos = {}; // a virtual tmp for storing location occupancy
+				tmpTotalPos["c4a"] = 0;
+				tmpTotalPos["c4b"] = 0;
+				tmpTotalPos["c4c"] = 0;
+				//INSERT CODE a forloop to loop through all array element
+				for(var device in devices){
+    			console.log(device);
+					var pos = askTensorForPosition(device);
+					tmpTotalPos[pos]=tmpTotalPos[pos]+1;
+					console.log(tmpTotalPos);
+				}
+				//INSERT CODE to update database
+			});
+
+			function askTensorForPosition(obj){//In the format of {"sourceMac":[{packet1},{packet2},{packet3}]}
+				//INSERT CODE for actually asking for position
+				randomLocation = getRandomInt(3);
+				if(randomLocation == 0){
+					return "c4a"
+				}else if(randomLocation == 1){
+					return "c4b"
+				}else{
+					return "c4c"
+				}
+			}
+
+			function getRandomInt(max) {
+			  return Math.floor(Math.random() * Math.floor(max));
+			}
+
 			app.listen(3000||process.env.PORT,function(){
 				console.log("Connected to MongoDB Server");
 			});

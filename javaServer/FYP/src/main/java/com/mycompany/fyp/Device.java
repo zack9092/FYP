@@ -8,6 +8,7 @@ import org.json.JSONObject;
 public class Device {
     private ArrayList<SignalInfo> packets = new ArrayList<SignalInfo>();
     public final int TIME_GAP = 5;
+    private String sourceMac = null;
     
     public void removeOutdatedPacket(){
         int newest = 0;
@@ -26,18 +27,23 @@ public class Device {
         }        
     }
     
-    public JSONObject createJSON(){
-        JSONObject obj = new JSONObject();
+    public JSONArray createJSONArray(){
         JSONArray ja = new JSONArray();
         for(SignalInfo p : packets){
             ja.put(p.getJSON());
         }
-        obj.put("packets",ja);
-        return obj;
+        return ja;
     }
     
     
     public void addPacket(SignalInfo p){
         packets.add(p);
+        if(sourceMac == null){
+            sourceMac = p.getSourceMac();
+        }
+    }
+
+    public String getSourceMac() {
+        return sourceMac;
     }
 }

@@ -1,16 +1,15 @@
 package com.mycompany.fyp;
 
-import java.io.EOFException; 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.TimeoutException; 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONObject; 
 import org.pcap4j.core.NotOpenException; 
-import org.pcap4j.core.PcapHandle; 
-import org.pcap4j.core.PcapHandle.TimestampPrecision; 
 import org.pcap4j.core.PcapNativeException; 
-import org.pcap4j.core.Pcaps; 
-import org.pcap4j.packet.Packet; 
+
 
 public class Main {
 
@@ -66,8 +65,8 @@ public class Main {
             //SOME CODE HERE for putting packets into packet list
              SignalInfo p = new SignalInfo("source","destination",100,1235);
              SignalInfo p2 = new SignalInfo("source2","destination2",100,1235);
-             SignalInfo p3 = new SignalInfo("source","destination",100,1235);
-             SignalInfo p4 = new SignalInfo("source","destination",100,1235); 
+             SignalInfo p3 = new SignalInfo("source","destination3",100,1235);
+             SignalInfo p4 = new SignalInfo("source","destination4",100,1235); 
              signalInfos.add(p);signalInfos.add(p2);signalInfos.add(p3);signalInfos.add(p4);
             //}
             
@@ -93,13 +92,30 @@ public class Main {
                     i++;
                 }
                 devices.add(device); // add device into the device list
-                System.out.println(device.createJSON());
+                System.out.println(device.createJSONArray());
                 System.out.println(signalInfos.size());
             }
             // Finished crafting the device list that requires indoor positioning
             
             // ADD CODE HERE for passing all data (in json) to the nodejs server
-
+            JSONObject toNodejs = new JSONObject();
+                for(Device d : devices){
+                    toNodejs.put(d.getSourceMac(),d.createJSONArray());
+                }
+            System.out.println(toNodejs);
+            
+            HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
+            try {
+                HttpPost request = new HttpPost("http://localhost:3000/devicesPosition");
+                StringEntity params =new StringEntity("details="+toNodejs.toString());
+                request.addHeader("content-type", "application/x-www-form-urlencoded");
+                request.setEntity(params);
+                HttpResponse response = httpClient.execute(request);
+                //handle response here...
+            }catch (Exception ex) {
+                //handle exception here
+                System.out.println("POST ERROR");
+            }
             break;
      }  
     
