@@ -8,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +40,7 @@ public class Fragment2 extends Fragment {
     int floorPosition=0;
     String yourLocation;
     TextView textView;
-    LinearLayout recommendArea;
+    TableLayout recommendArea;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item2, null);
@@ -96,11 +99,24 @@ public class Fragment2 extends Fragment {
                     try {
                         JSONArray jsonArray = new JSONArray(response.body().toString());
                         for(int i=0;i<jsonArray.length();i++) {
-                            RelativeLayout relativeLayout = new RelativeLayout(getActivity());
-                            TextView temp = new TextView(getActivity());
-                            temp.setText(jsonArray.getJSONObject(i).getString("place"));
-                            relativeLayout.addView(temp);
-                            recommendArea.addView(relativeLayout);
+                            TableRow tableRow=new TableRow(getActivity());
+                            TextView status = new TextView(getActivity());
+                            status.setText("   ");
+                            status.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                            TextView floor = new TextView(getActivity());
+                            floor.setText("Floor: "+jsonArray.getJSONObject(i).getString("floor"));
+                            TextView block = new TextView(getActivity());
+                            block.setText("Block: "+jsonArray.getJSONObject(i).getString("block"));
+                            TextView seatAvailable = new TextView(getActivity());
+                            seatAvailable.setText("Seat Available: "+(jsonArray.getJSONObject(i).getInt("MaxSeats")-jsonArray.getJSONObject(i).getInt("PeopleThere")));
+                            Button button = new Button(getActivity());
+                            button.setText("Book位");
+                            tableRow.addView(floor);
+                            tableRow.addView(block);
+                            tableRow.addView(seatAvailable);
+                            tableRow.addView(status);
+                            tableRow.addView(button);
+                            recommendArea.addView(tableRow);
                         }
                     }catch(Exception e){
                         System.out.println(e);

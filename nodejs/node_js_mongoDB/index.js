@@ -60,6 +60,7 @@ app.get('/seatStatus',function(req,res){
 	MongoClient.connect(url,function(err,client){
 		var db=client.db('kwongkalai');
 		db.collection('seatStatus').findOne({"place_id":req.query.place_id},function(err,doc){
+			console.log(req.query.place_id);
 			res.json(doc);
 			console.log(doc);
 			client.close();
@@ -150,16 +151,22 @@ function findNearestSeat(currentFloor,lowerFloor,upperFloor,callBack){
 	var result=[];
 	var lowerFloorDistance;
 	var upperFloorDistance;
+	var lowerCheck=lowerFloor.length;
+	var upperCheck=upperFloor.length;
 	for(var i=0;i<lowerFloor.length;i++){
+		lowerCheck--;
 		lowerFloorDistance=currentFloor-lowerFloor[i].floor;
+		//console.log(lowerFloor[i])
 		for(var x=0;x<upperFloor.length;x++){
+			upperCheck--;
 			upperFloorDistance=upperFloor[x].floor-currentFloor;
 			if(lowerFloorDistance<=upperFloorDistance){
-				//console.log(lowerFloor[x]);
-				result.push(lowerFloor.shift());
+				//console.log(lowerFloor[i]);
+				result.push(lowerFloor[i]);
+				break;
 			}else{
 				//console.log(upperFloor[x]);
-				result.push(UpperFloor.shift());
+				result.push(UpperFloor[x]);
 			}
 			if(lowerFloor.length==0){
 				break;
@@ -171,13 +178,13 @@ function findNearestSeat(currentFloor,lowerFloor,upperFloor,callBack){
 		}
 	}
 	while(true){
-		if((lowerFloor.length==0&&upperFloor.lenght==0)||result.length==3){
+		if((lowerCheck==0&&upperCheck==0)||result.length==3){
 			callBack(result);
 				return;
 		}
-		if(lowerFloor.length==0&&upperFloor.lenght!=0){
+		if(lowerCheck==0&&upperCheck!=0){
 			result.push(upperFloor.shift());
-		}else if(lowerFloor.length!=0&&upperFloor.lenght==0){
+		}else if(lowerCheck!=0&&upperCheck==0){
 			result.push(lowerFloor.shift());
 		}
 	}
