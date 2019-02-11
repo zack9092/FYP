@@ -41,24 +41,24 @@ app.post('/login',function(req,res,next){
 		});
 });
 			//Receiving JSON from java Server
-			app.post('/devicesPosition',function(req,res,next){
-				var post_data=req.body;
-				console.log(post_data);
-				var devices = JSON.parse(post_data.details);
-				console.log(devices);
-				var tmpTotalPos = {}; // a virtual tmp for storing location occupancy
-				tmpTotalPos["c4a"] = 0;
-				tmpTotalPos["c4b"] = 0;
-				tmpTotalPos["c4c"] = 0;
-				//INSERT CODE a forloop to loop through all array element
-				for(var device in devices){
-    			console.log(device);
-					var pos = askTensorForPosition(device);
-					tmpTotalPos[pos]=tmpTotalPos[pos]+1;
-					console.log(tmpTotalPos);
-				}
-				//INSERT CODE to update database
-			});
+app.post('/devicesPosition',function(req,res,next){
+	var post_data=req.body;
+	console.log(post_data);
+	var devices = JSON.parse(post_data.details);
+	console.log(devices);
+	var tmpTotalPos = {}; // a virtual tmp for storing location occupancy
+	tmpTotalPos["c4a"] = 0;
+	tmpTotalPos["c4b"] = 0;
+	tmpTotalPos["c4c"] = 0;
+	//INSERT CODE a forloop to loop through all array element
+	for(var device in devices){
+  	console.log(device);
+		var pos = askTensorForPosition(device);
+		tmpTotalPos[pos]=tmpTotalPos[pos]+1;
+		console.log(tmpTotalPos);
+	}
+	//INSERT CODE to update database
+});
 
 app.get('/seats',function(req,res){
 	console.log("/seats");
@@ -209,7 +209,8 @@ function findNearestSeat(currentFloor,lowerFloor,upperFloor,callBack){
 	}
 }
 
-function askTensorForPosition(obj){//In the format of {"sourceMac":[{packet1},{packet2},{packet3}]}
+function askTensorForPosition(obj){
+	//In the format of {"sourceMac":[{packet1},{packet2},{packet3}]}
 	//INSERT CODE for actually asking for position
 	randomLocation = getRandomInt(3);
 	if(randomLocation == 0){
