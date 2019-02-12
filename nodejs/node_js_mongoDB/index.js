@@ -43,21 +43,14 @@ app.post('/login',function(req,res,next){
 			//Receiving JSON from java Server
 app.post('/devicesPosition',function(req,res,next){
 	var post_data=req.body;
-	console.log(post_data);
 	var devices = JSON.parse(post_data.details);
 	console.log(devices);
-	var tmpTotalPos = {}; // a virtual tmp for storing location occupancy
-	tmpTotalPos["c4a"] = 0;
-	tmpTotalPos["c4b"] = 0;
-	tmpTotalPos["c4c"] = 0;
-	//INSERT CODE a forloop to loop through all array element
-	for(var device in devices){
-  	console.log(device);
-		var pos = askTensorForPosition(device);
-		tmpTotalPos[pos]=tmpTotalPos[pos]+1;
-		console.log(tmpTotalPos);
-	}
+	//pass the whole devices array to tensorflow
+	var pos = askTensorForPosition(devices,function(occupancy){
+		console.log(occupancy);
 	//INSERT CODE to update database
+	});
+
 });
 
 app.get('/seats',function(req,res){
@@ -209,17 +202,27 @@ function findNearestSeat(currentFloor,lowerFloor,upperFloor,callBack){
 	}
 }
 
-function askTensorForPosition(obj){
+function askTensorForPosition(obj,callback){
 	//In the format of {"sourceMac":[{packet1},{packet2},{packet3}]}
 	//INSERT CODE for actually asking for position
-	randomLocation = getRandomInt(3);
-	if(randomLocation == 0){
-		return "c4a"
-	}else if(randomLocation == 1){
-		return "c4b"
-	}else{
-		return "c4c"
+	var occupancy = {}; // a virtual tmp for storing location occupancy
+	occupancy["c4a"] = 0;
+	occupancy["c4b"] = 0;
+	occupancy["c4c"] = 0;
+
+	for(var device in obj){
+		var randomInt	 = getRandomInt(3);
+		var randomLocation;
+		if(randomInt == 0){
+			randomLocation = "c4a"
+		}else if(randomInt == 1){
+			randomLocation = "c4b"
+		}else{
+			randomLocation = "c4c"
+		}
+		occupancy[randomLocation]=occupancy[randomLocation]+1;
 	}
+	callback(occupancy);
 }
 
 function getRandomInt(max) {
