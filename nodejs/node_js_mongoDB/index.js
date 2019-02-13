@@ -42,20 +42,33 @@ app.post('/login',function(req,res,next){
 });
 			//Receiving JSON from java Server
 app.post('/devicesPosition',function(req,res,next){
+	console.log('/devicesPosition');
 	var post_data=req.body;
 	console.log(post_data);
 	var devices = JSON.parse(post_data.details);
 	console.log(devices);
 	var tmpTotalPos = {}; // a virtual tmp for storing location occupancy
-	tmpTotalPos["c4a"] = 0;
-	tmpTotalPos["c4b"] = 0;
-	tmpTotalPos["c4c"] = 0;
+	tmpTotalPos["C4A"] = 0;
+	tmpTotalPos["C4B"] = 0;
+	tmpTotalPos["C4C"] = 0;
 	//INSERT CODE a forloop to loop through all array element
+	
 	for(var device in devices){
   	console.log(device);
 		var pos = askTensorForPosition(device);
 		tmpTotalPos[pos]=tmpTotalPos[pos]+1;
 		console.log(tmpTotalPos);
+		console.log("A");
+	}
+	for(name in tmpTotalPos){
+		console.log("B");
+		var criteria={"place":name};
+		console.log(criteria);
+		console.log(tmpTotalPos[name]);
+		findOne('seatStatus',criteria,function(doc){
+			console.log(doc);
+		});
+		
 	}
 	//INSERT CODE to update database
 });
@@ -214,17 +227,28 @@ function askTensorForPosition(obj){
 	//INSERT CODE for actually asking for position
 	randomLocation = getRandomInt(3);
 	if(randomLocation == 0){
-		return "c4a"
+		return "C4A"
 	}else if(randomLocation == 1){
-		return "c4b"
+		return "C4B"
 	}else{
-		return "c4c"
+		return "C4C"
 	}
 }
 
 function getRandomInt(max) {
 	return Math.floor(Math.random() * Math.floor(max));
 }
+
+function findOne(collection,criteria,callback){
+	MongoClient.connect(url,function(err,client){
+		var db=client.db('kwongkalai');
+		db.collection(collection).findOne(criteria,function(err,doc){
+			console.log(doc);
+			client.close();
+			callback(doc);
+		});
+	});
+};
 
 
 app.listen(3000||process.env.PORT,function(){
