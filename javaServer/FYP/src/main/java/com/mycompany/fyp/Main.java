@@ -3,6 +3,7 @@ package com.mycompany.fyp;
 import java.util.ArrayList;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -14,6 +15,7 @@ import org.pcap4j.core.PcapNativeException;
 public class Main {
 
     public static void main(String[] args) throws PcapNativeException, NotOpenException {
+        final int SLEEP_TIME = 10;
         /*
         //TESTING
         SignalInfo p = new SignalInfo("source","destination",100,1235);
@@ -54,7 +56,9 @@ public class Main {
 */
             
             //final File folder = new File("/home/you/Desktop");
+            try{              
             while(true){
+            Thread.sleep(SLEEP_TIME * 1000);    
             ArrayList<SignalInfo> signalInfos = new ArrayList<SignalInfo>();
             ArrayList<Device> devices = new ArrayList<Device>();
                         
@@ -63,11 +67,13 @@ public class Main {
             //System.out.println(fileEntry.getName());
             //SOME CODE HERE for reading in 802.11 stuffs
             //SOME CODE HERE for putting packets into packet list
-             SignalInfo p = new SignalInfo("source","destination",100,1235);
-             SignalInfo p2 = new SignalInfo("source2","destination2",100,1235);
-             SignalInfo p3 = new SignalInfo("source","destination3",100,1235);
-             SignalInfo p4 = new SignalInfo("source","destination4",100,1235); 
-             signalInfos.add(p);signalInfos.add(p2);signalInfos.add(p3);signalInfos.add(p4);
+            for(int i=0;i<30;i++){
+                for(int j=0;j<3;j++){
+                    int randomRSSI = (int)(Math.random() * -100 - 1);
+                    SignalInfo p = new SignalInfo("source"+i,"destination"+j,randomRSSI,1235);
+                    signalInfos.add(p);
+                }
+            }
             //}
             
             //group packets to their device
@@ -114,11 +120,22 @@ public class Main {
                 //handle response here...
             }catch (Exception ex) {
                 //handle exception here
+                System.out.println("POST DEVICE LOCATION ERROR");
+            }
+            try {
+                HttpGet request = new HttpGet("http://localhost:3000/checkBooking");
+                request.addHeader("content-type", "application");
+                HttpResponse response = httpClient.execute(request);
+                //handle response here...
+            }catch (Exception ex) {
+                //handle exception here
                 System.out.println("POST ERROR");
             }
-            break;
-     }  
-    
-}
+            //break;
+            }  
+            }catch(InterruptedException e) {
+                e.printStackTrace();
+            }
+    }
 }
 
