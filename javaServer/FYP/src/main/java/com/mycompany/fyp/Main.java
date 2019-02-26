@@ -1,5 +1,6 @@
 package com.mycompany.fyp;
 
+import java.io.File;
 import java.util.ArrayList;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -9,13 +10,36 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject; 
 import org.pcap4j.core.NotOpenException; 
+import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException; 
-
+import org.pcap4j.core.Pcaps;
+import org.pcap4j.packet.Packet;
+import java.io.EOFException; 
+import java.util.Arrays;
+import java.util.concurrent.TimeoutException; 
 
 public class Main {
 
+     
+private static int COUNT = 1; 
+ 
+private static final String PCAP_FILE_KEY 
+    = ReadPacketFile.class.getName() + ".pcapFile"; 
+private static String PCAP_FILE 
+    = System.getProperty(PCAP_FILE_KEY, "C:/Users/User/Desktop/testing.pcap"); 
+
+private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+public static String bytesToHex(byte[] bytes) {
+    char[] hexChars = new char[bytes.length * 2];
+    for ( int j = 0; j < bytes.length; j++ ) {
+        int v = bytes[j] & 0xFF;
+        hexChars[j * 2] = hexArray[v >>> 4];
+        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+    }
+    return new String(hexChars);
+}
     public static void main(String[] args) throws PcapNativeException, NotOpenException {
-        final int SLEEP_TIME = 10;
+        final int SLEEP_TIME = 0; //seconds
         /*
         //TESTING
         SignalInfo p = new SignalInfo("source","destination",100,1235);
@@ -54,28 +78,62 @@ public class Main {
     handle.close(); 
             //END TESTING
 */
-            
-            //final File folder = new File("/home/you/Desktop");
+            String basePath = new File("").getAbsolutePath();
+            final File folder = new File(basePath+"/radiotap");
             try{              
             while(true){
             Thread.sleep(SLEEP_TIME * 1000);    
-            ArrayList<SignalInfo> signalInfos = new ArrayList<SignalInfo>();
-            ArrayList<Device> devices = new ArrayList<Device>();
+            ArrayList<SignalInfo> signalInfos = new ArrayList<>();
+            ArrayList<Device> devices = new ArrayList<>();
                         
             //read and store all packet data from files
-            //for (final File fileEntry : folder.listFiles()) {
-            //System.out.println(fileEntry.getName());
-            //SOME CODE HERE for reading in 802.11 stuffs
-            //SOME CODE HERE for putting packets into packet list
-            for(int i=0;i<30;i++){
-                for(int j=0;j<3;j++){
-                    int randomRSSI = (int)(Math.random() * -100 - 1);
-                    SignalInfo p = new SignalInfo("source"+i,"destination"+j,randomRSSI,1235);
-                    signalInfos.add(p);
+            for (final File fileEntry : folder.listFiles()) {
+                PcapHandle handle; 
+                String fileName = fileEntry.getName();
+                if(fileName.contains(".pcap")){
+                    PCAP_FILE = System.getProperty(PCAP_FILE_KEY, basePath+"\\radiotap\\"+fileName); 
+                    System.out.println(PCAP_FILE);
+                    try { 
+                      handle = Pcaps.openOffline(PCAP_FILE, PcapHandle.TimestampPrecision.NANO); 
+                    } catch (PcapNativeException e) { 
+                      handle = Pcaps.openOffline(PCAP_FILE); 
+                    } 
+                    for (int i = 0; i < COUNT; i++) { 
+                      try { 
+                        Packet packet = handle.getNextPacketEx();
+                        System.out.println(handle.getTimestamp()); 
+                        byte[] bytePayload = packet.getPayload().getRawData();
+//                      Maybe checking if packet is of a certain format
+//                        if((bytePayload[1] & 1)!= 1){
+//                            System.out.println("DS flag is not set, wrong packet");
+//                            continue;
+//                        }
+                        String sourceMac = bytesToHex(Arrays.copyOfRange(bytePayload,10,16));
+                        System.out.println("This packet have a source Mac of :" + sourceMac);
+                        String receiverMac = bytesToHex(Arrays.copyOfRange(bytePayload,4,10));
+                        System.out.println("This packet have a receiver Mac of :" + receiverMac);
+                        int rssi = 100;
+                        long timeStamp = handle.getTimestamp().getTime();
+                        byte[] byteHeader = packet.getHeader().getRawData();
+                        int radiotapHeaderLength = byteHeader[2];
+                        System.out.println("This packet have a length of :" + radiotapHeaderLength);
+                        rssi = byteHeader[22];
+                        System.out.println("This packet have a RSSI of :" + rssi);
+                        // Mapping packet info into signalInfo object
+                        SignalInfo p = new SignalInfo(sourceMac,receiverMac,rssi,timeStamp);
+                        signalInfos.add(p);
+                      } catch (TimeoutException e) { 
+                      } catch (EOFException e) { 
+                        System.out.println("EOF"); 
+                        break; 
+                      } 
+                    } 
+
+                    
+                handle.close(); 
                 }
             }
-            //}
-            
+
             //group packets to their device
             Boolean newGroup = true; // flag for new group of packets
             String deviceMac = "";
@@ -131,7 +189,7 @@ public class Main {
                 //handle exception here
                 System.out.println("POST ERROR");
             }
-            //break;
+            break;
             }  
             }catch(InterruptedException e) {
                 e.printStackTrace();

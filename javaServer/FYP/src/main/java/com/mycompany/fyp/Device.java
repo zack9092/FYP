@@ -11,8 +11,8 @@ public class Device {
     private String sourceMac = null;
     
     public void removeOutdatedPacket(){
-        int newest = 0;
-        int tmpTimeStamp;
+        long newest = 0;
+        long tmpTimeStamp;
         for(SignalInfo p : packets){
             tmpTimeStamp = p.getTimeStamp();
             if(tmpTimeStamp > newest){
