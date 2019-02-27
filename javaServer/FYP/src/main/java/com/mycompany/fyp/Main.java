@@ -21,7 +21,7 @@ import java.util.concurrent.TimeoutException;
 public class Main {
 
      
-private static int COUNT = 1; 
+private static int COUNT = 1000; 
  
 private static final String PCAP_FILE_KEY 
     = ReadPacketFile.class.getName() + ".pcapFile"; 
@@ -103,21 +103,21 @@ public static String bytesToHex(byte[] bytes) {
                         Packet packet = handle.getNextPacketEx();
                         System.out.println(handle.getTimestamp()); 
                         byte[] bytePayload = packet.getPayload().getRawData();
-//                      Maybe checking if packet is of a certain format
+//                      Maybe checking if packet is of a certain format (expect DS 00)
 //                        if((bytePayload[1] & 1)!= 1){
 //                            System.out.println("DS flag is not set, wrong packet");
 //                            continue;
 //                        }
                         String sourceMac = bytesToHex(Arrays.copyOfRange(bytePayload,10,16));
                         System.out.println("This packet have a source Mac of :" + sourceMac);
-                        String receiverMac = bytesToHex(Arrays.copyOfRange(bytePayload,4,10));
+                        String receiverMac = "AABBCCDDEEFF";//mac of the wireless adapter
                         System.out.println("This packet have a receiver Mac of :" + receiverMac);
                         int rssi = 100;
                         long timeStamp = handle.getTimestamp().getTime();
                         byte[] byteHeader = packet.getHeader().getRawData();
                         int radiotapHeaderLength = byteHeader[2];
                         System.out.println("This packet have a length of :" + radiotapHeaderLength);
-                        rssi = byteHeader[22];
+                        rssi = byteHeader[30];
                         System.out.println("This packet have a RSSI of :" + rssi);
                         // Mapping packet info into signalInfo object
                         SignalInfo p = new SignalInfo(sourceMac,receiverMac,rssi,timeStamp);
@@ -155,6 +155,7 @@ public static String bytesToHex(byte[] bytes) {
                     }
                     i++;
                 }
+                device.removeOutdatedPacket();
                 devices.add(device); // add device into the device list
                 System.out.println(device.createJSONArray());
                 System.out.println(signalInfos.size());
