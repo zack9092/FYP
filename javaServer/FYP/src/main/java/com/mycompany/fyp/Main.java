@@ -1,6 +1,7 @@
 package com.mycompany.fyp;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,8 +22,8 @@ import java.util.concurrent.TimeoutException;
 public class Main {
 
      
-private static int COUNT = 1000; 
- 
+private static int COUNT = 1; 
+private static final long UPLOAD_RATE_SECONDS = 10;
 private static final String PCAP_FILE_KEY 
     = ReadPacketFile.class.getName() + ".pcapFile"; 
 private static String PCAP_FILE 
@@ -87,21 +88,33 @@ public static String bytesToHex(byte[] bytes) {
             ArrayList<Device> devices = new ArrayList<>();
                         
             //read and store all packet data from files
-            for (final File fileEntry : folder.listFiles()) {
+            File[] fileEntry = folder.listFiles();
+            for (int i=0 ; i < fileEntry.length ; i++) {
                 PcapHandle handle; 
-                String fileName = fileEntry.getName();
-                if(fileName.contains(".pcap")){
-                    PCAP_FILE = System.getProperty(PCAP_FILE_KEY, basePath+"\\radiotap\\"+fileName); 
+                String fileName = fileEntry[i].getName();
+                if(fileName.contains(".pcap-")){               	
+                    PCAP_FILE = System.getProperty(PCAP_FILE_KEY, basePath+"/radiotap/"+fileName); 
+                    //Check if the file is old and delete it
+                	Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                	long currentSeconds = timestamp.getTime()/1000;
+                	long fileSceonds = Long.parseLong(PCAP_FILE.substring(PCAP_FILE.indexOf("-")+1));
                     System.out.println(PCAP_FILE);
+                    long timeDifference = (currentSeconds - fileSceonds);
+                    System.out.println("The time difference between the pcap file and now is: "+timeDifference);
+//                    if(timeDifference > UPLOAD_RATE_SECONDS) {
+//                    	System.out.println("Bad file");
+//                    	continue;
+//                    }
+                    //start processing packets
                     try { 
                       handle = Pcaps.openOffline(PCAP_FILE, PcapHandle.TimestampPrecision.NANO); 
                     } catch (PcapNativeException e) { 
                       handle = Pcaps.openOffline(PCAP_FILE); 
                     } 
-                    for (int i = 0; i < COUNT; i++) { 
+                    for (int j = 0; j < COUNT; j++) { 
                       try { 
                         Packet packet = handle.getNextPacketEx();
-                        System.out.println(handle.getTimestamp()); 
+                        System.out.println(handle.getTimestamp().getTime()); 
                         byte[] bytePayload = packet.getPayload().getRawData();
 //                      Maybe checking if packet is of a certain format (expect DS 00)
 //                        if((bytePayload[1] & 1)!= 1){
@@ -188,11 +201,11 @@ public static String bytesToHex(byte[] bytes) {
                 //handle response here...
             }catch (Exception ex) {
                 //handle exception here
-                System.out.println("POST ERROR");
+                System.out.println("CHECK BOOKING ERROR");
             }
             break;
             }  
-            }catch(InterruptedException e) {
+            }catch(Exception e) {
                 e.printStackTrace();
             }
     }
