@@ -43,7 +43,8 @@ public static void main(String[] args){
         //handle exception here
         System.out.println("GET ERROR");
     }
-*/    
+*/  
+	final int NUM_OF_ATTRIBUTE  = 1;
     String a = "{\"allPackets\":[{\"14CC20C04DA2\":[{\"timeStamp\":1551190456277,\"RSSI\":-80,\"responsibleRouter\":\"AABBCCDDEEFF\"},"
     		+ "{\"timeStamp\":1551190456232,\"RSSI\":-92,\"responsibleRouter\":\"AABBCCDDEEFF\"}]"
     		+ ",\"64098070359B\":[{\"timeStamp\":1551190430912,\"RSSI\":-82,\"responsibleRouter\":\"AABBCCDDEEFF\"}]}"
@@ -55,20 +56,20 @@ public static void main(String[] args){
     	JSONObject allPackets = new JSONObject(a);
     	JSONArray allPacketsArray = (JSONArray)allPackets.get("allPackets");
     	for(int i=0 ; i<allPacketsArray.length(); i++){
-    		System.out.println(allPacketsArray.length());
+//    		System.out.println(allPacketsArray.length());
     		JSONObject allMac = (JSONObject)allPacketsArray.get(i);
     		Iterator<String> keys = allMac.keys();
     		for(int j=0 ; j<allMac.length(); j++){
-    			System.out.println(allMac.length());
- //    	Group packets with their MAC   
+//    			System.out.println(allMac.length());
+//    	Group packets with their MAC   
     			String str_Name=keys.next();
-    			System.out.println(str_Name);
+//    			System.out.println(str_Name);
     			if(!deviceMap.containsKey(str_Name)) {
     				deviceMap.put(str_Name, new JSONArray());
     			}
     			tmpArray = deviceMap.get(str_Name);
     			putArray = (JSONArray)allMac.get(str_Name);
-    			System.out.println(putArray.length());
+//    			System.out.println(putArray.length());
     			for(int k=0 ; k<putArray.length(); k++) {
     				tmpArray.put(putArray.get(k));
     			}	
@@ -77,10 +78,27 @@ public static void main(String[] args){
     
     	System.out.println(deviceMap);
 
+//    	Filter out useless timestamp from same USB
+    	Set<String> deviceMapKeys = deviceMap.keySet();
+    	HashMap<String, JSONObject> newDeviceMap = new HashMap<>();
+    	for(String s :deviceMapKeys) {
+    		JSONArray ss = deviceMap.get(s);
+    		long newestTimeStamp = 0;
+    		int newestIndex = 0;
+    		JSONObject obj;
+    		for(int j=0;j<ss.length();j++) {
+    			obj = ss.getJSONObject(j);
+    			if(newestTimeStamp < Long.parseLong(obj.get("timeStamp")+"")) { // add code to do more filter
+    				newestIndex = j;
+    			}
+    		}
+    		obj = ss.getJSONObject(newestIndex);
+    		newDeviceMap.put(s, obj);
+    	}
     
-    
-    
-
+    	System.out.println(newDeviceMap);
+    	
+//    	format all records to the prediction array format
     	
     
     
@@ -88,13 +106,20 @@ public static void main(String[] args){
 		System.out.println();
 		//knn(basePath+"/knnData"+"/apl_train.txt",basePath+"/knnData"+"/apl_test.txt",1,2);
 //	    Creating the array for prediction
-//		List<TestRecord> predictList = new ArrayList<>();	
-//		double[] da;
-//		for(int i=0;i<2;i++) {}
-//		predictList.add(new TestRecord(da,-1));
-//		TestRecord[] predictArray = new TestRecord[ predictList.size() ];
-//		predictList.toArray( predictArray );
-//		knn(basePath+"/knnData"+"/apl_train.txt",predictArray,1,2);
+		List<TestRecord> predictList = new ArrayList<>();	
+		
+//		Initialize the array
+
+	    for(String s :deviceMapKeys) {
+	    	double[] da = new double[NUM_OF_ATTRIBUTE];
+	    	da[0] = 00;
+			da[0] = newDeviceMap.get(s).getDouble("RSSI");
+			predictList.add(new TestRecord(da,-1));	
+	    }
+
+		TestRecord[] predictArray = new TestRecord[ predictList.size() ];
+		predictList.toArray( predictArray );
+		knn(basePath+"/knnData"+"/apl_train.txt",predictArray,1,2);
 
 	}
 	
@@ -139,7 +164,7 @@ public static void main(String[] args){
 			for(int i = 0; i < numOfTestingRecord; i ++){
 				TrainRecord[] neighbors = findKNearestNeighbors(trainingSet, testingSet[i], K, metric);
 				int classLabel = classify(neighbors);
-				System.out.println("Rredicting "+testingSet[i].attributes[0]+" as class label "+classLabel);
+				System.out.println("Predicting "+testingSet[i].attributes[0]+" as class label "+classLabel);
 				testingSet[i].predictedLabel = classLabel; //assign the predicted label to TestRecord
 			}
 			
