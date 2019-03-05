@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,'public')));
 var MongoClient = mongodb.MongoClient;
 var url = 'mongodb://kwongkalai1:kwongkalai1@ds151402.mlab.com:51402/kwongkalai';
-
+var allPackets = [];
 
 app.post('/login',function(req,res,next){
 	var post_data=req.body;
@@ -40,26 +40,25 @@ app.post('/login',function(req,res,next){
 			});
 		});
 });
-			//Receiving JSON from java Server
+
+//Receiving JSON from java Server
 app.post('/devicesPosition',function(req,res,next){
 	console.log('/devicesPosition');
 	var post_data=req.body;
 	var devices = JSON.parse(post_data.details);
 	console.log(devices);
+//Store all device into an array
+	allPackets.push(devices);
+});
 
-	//pass the whole devices array to tensorflow
-	var pos = askTensorForPosition(devices,function(occupancy){
-		console.log(occupancy);
 
-		
-	//INSERT CODE to update database
-				for( x in occupancy){
-					var criteria=JSON.parse('{"place":"'+x+'"}');
-					var updateValue='{"PeopleThere":'+occupancy[x]+'}';
-					update("seatStatus",criteria,updateValue,function(){});
-  				}
-				
-	});
+app.get('/getDeviceArray',function(req,res,next){
+	console.log('/getDeviceArray');
+	var tmp = {};
+	tmp["allPackets"] = allPackets;
+//Store all device into an array
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(tmp));
 });
 
 app.get('/seats',function(req,res){
@@ -250,7 +249,7 @@ function findNearestSeat(currentFloor,lowerFloor,upperFloor,callBack){
 	}
 }
 
-function askTensorForPosition(obj,callback){
+/*function askTensorForPosition(obj,callback){
 	//In the format of {"sourceMac":[{packet1},{packet2},{packet3}]}
 	//INSERT CODE for actually asking for position
 
@@ -259,8 +258,7 @@ function askTensorForPosition(obj,callback){
 	occupancy["C4B"] = 0;
 	occupancy["C4C"] = 0;
 
-	//for(var device in obj){
-		for(var i=0;i<30;i++){
+	for(var device in obj){
 		var randomInt	 = getRandomInt(3);
 		var randomLocation;
 		if(randomInt == 0){
@@ -274,7 +272,7 @@ function askTensorForPosition(obj,callback){
 
 	}
 	callback(occupancy);
-}
+}*/
 
 function getRandomInt(max) {
 	return Math.floor(Math.random() * Math.floor(max));

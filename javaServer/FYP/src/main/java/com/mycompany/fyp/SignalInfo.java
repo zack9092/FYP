@@ -6,9 +6,9 @@ public class SignalInfo {
     private String sourceMac;
     private String destinationMac;
     private int RSSI;
-    private int timeStamp;
+    private long timeStamp;
     
-    public SignalInfo(String sourceMac,String destinationMac,int RSSI,int timeStamp){
+    public SignalInfo(String sourceMac,String destinationMac,int RSSI,long timeStamp){
         this.sourceMac = sourceMac;
         this.destinationMac = destinationMac;
         this.RSSI = RSSI;
@@ -19,6 +19,7 @@ public class SignalInfo {
         JSONObject obj = new JSONObject();
         obj.put("responsibleRouter", getDestinationMac());
         obj.put("RSSI", getRSSI());
+        obj.put("timeStamp", getTimeStamp());
         return obj;
     }    
 
@@ -46,11 +47,11 @@ public class SignalInfo {
         this.RSSI = RSSI;
     }
 
-    public int getTimeStamp() {
+    public long getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(int timeStamp) {
+    public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
 }

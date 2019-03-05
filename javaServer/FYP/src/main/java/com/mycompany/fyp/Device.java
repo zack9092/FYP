@@ -7,23 +7,25 @@ import org.json.JSONObject;
 
 public class Device {
     private ArrayList<SignalInfo> packets = new ArrayList<SignalInfo>();
-    public final int TIME_GAP = 5;
+    public final int TIME_GAP = 5000; // milsec
     private String sourceMac = null;
     
     public void removeOutdatedPacket(){
-        int newest = 0;
-        int tmpTimeStamp;
+        long newest = 0;
+        long tmpTimeStamp;
         for(SignalInfo p : packets){
             tmpTimeStamp = p.getTimeStamp();
             if(tmpTimeStamp > newest){
                 newest = tmpTimeStamp;
             }
         }
-        for(SignalInfo p : packets){
-            tmpTimeStamp = p.getTimeStamp();
+        for(int i = 0 ; i < packets.size() ;){
+            tmpTimeStamp = packets.get(i).getTimeStamp();
             if(tmpTimeStamp < newest - TIME_GAP){
-                packets.remove(p);
+                packets.remove(i);
+                continue;
             }
+            i++;
         }        
     }
     

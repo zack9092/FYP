@@ -22,7 +22,7 @@ public class ReadPacketFile {
   private static final String PCAP_FILE_KEY 
     = ReadPacketFile.class.getName() + ".pcapFile"; 
   private static final String PCAP_FILE 
-    = System.getProperty(PCAP_FILE_KEY, "C:/Users/User/Desktop/testing.pcap"); 
+    = System.getProperty(PCAP_FILE_KEY, "C:\\Users\\User\\Documents\\NetBeansProjects\\FYP\\radiotap\\radiotap.pcap"); 
  
   public static void main(String[] args) throws PcapNativeException, NotOpenException { 
     PcapHandle handle; 
