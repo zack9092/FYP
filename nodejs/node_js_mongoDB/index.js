@@ -51,9 +51,15 @@ app.post('/devicesPosition',function(req,res,next){
 	var pos = askTensorForPosition(devices,function(occupancy){
 		console.log(occupancy);
 
+		
 	//INSERT CODE to update database
+				for( x in occupancy){
+					var criteria=JSON.parse('{"place":"'+x+'"}');
+					var updateValue='{"PeopleThere":'+occupancy[x]+'}';
+					update("seatStatus",criteria,updateValue,function(){});
+  				}
+				
 	});
-
 });
 
 app.get('/seats',function(req,res){
@@ -61,9 +67,10 @@ app.get('/seats',function(req,res){
 	MongoClient.connect(url,function(err,client){
 		var db=client.db('kwongkalai');
 		db.collection('student').findOne({"userName":"s1234567"},function(err,doc){
+			client.close();
 			res.json(doc);
 
-			client.close();
+			
 		});
 	});
 });
@@ -76,9 +83,10 @@ app.get('/seatStatus',function(req,res){
 		var db=client.db('kwongkalai');
 		db.collection('seatStatus').findOne({"place_id":req.query.place_id},function(err,doc){
 			console.log(req.query.place_id);
-			res.json(doc);
+			
 			console.log(doc);
 			client.close();
+			res.json(doc);
 		});
 	});
 });
@@ -97,6 +105,43 @@ app.get('/seatRecommended',function(req,res){
 		});
 	});
 });
+
+
+app.post('/booking',function(req,res,next){
+	console.log('/booking');
+	var post_data=JSON.parse(req.body.data);
+	console.log(post_data);
+	insert("booking",post_data,function(){
+		console.log("Booking successful");
+		var criteria=JSON.parse('{"place":"'+post_data["place"]+'"}');
+		console.log(criteria);
+		findOne("seatStatus",criteria,function(doc){
+			console.log(doc);
+		//var newNumber=Number(doc["booking"])
+		var bookingPeople='{"booking":'+Number(doc["booking"]+1)+'}';
+		console.log(bookingPeople);
+		update("seatStatus",doc,bookingPeople,function(){});
+		res.json();
+		});
+		
+	});
+
+});
+
+app.get('/checkBooking',function(req,res){
+	console.log("/checkBooking");
+	var myDate = Date.now();
+	console.log(myDate);
+	checkBooking(myDate,function(){
+		
+		findBookingNumber(function(temp){
+				updateBooking(temp);
+				res.json();
+		});
+	});
+	
+});
+
 
 function findLowerFloor(floor,callback){
 	var array=[];
@@ -237,6 +282,7 @@ function getRandomInt(max) {
 
 function findOne(collection,criteria,callback){
 	MongoClient.connect(url,function(err,client){
+		
 		var db=client.db('kwongkalai');
 		db.collection(collection).findOne(criteria,function(err,doc){
 			console.log(doc);
@@ -246,6 +292,134 @@ function findOne(collection,criteria,callback){
 	});
 };
 
+function insert(collection,data,callback){
+	console.log(data);
+	MongoClient.connect(url,function(err,client){
+		var db=client.db('kwongkalai');
+		db.collection(collection).insertOne(data,function(err){
+			if(err) throw err;
+			client.close();
+			callback();
+		});
+	});
+};
+
+function update(collection,criteria,newData,callback){
+	console.log('{"$set":'+newData+'}');
+	var set = JSON.parse('{"$set":'+newData+'}');
+	console.log("AAasdadsAA");
+	console.log(set);
+	MongoClient.connect(url,function(err,client){
+		var db=client.db('kwongkalai');
+		db.collection(collection).updateOne(criteria,set,function(err){
+			if(err) throw err;
+			client.close();
+			callback();
+		});
+	});
+	
+};
+
+function remove(collection,criteria,callback){
+		MongoClient.connect(url,function(err,client){
+		var db=client.db('kwongkalai');
+		db.collection(collection).deleteOne(criteria,function(err,obj){
+			if(err) throw err;
+			client.close();
+			callback();
+		});
+	});
+}
+
+
+
+function checkBooking(myDate,callback){
+	MongoClient.connect(url, function(err, client){
+  				if (err) throw err;
+ 				var db=client.db('kwongkalai');
+ 				 db.collection("booking").find().toArray(function(err, result) {
+   		 		if (err) throw err;
+				//console.log(result);
+				if(result.length!=0){
+					var test=0;
+				result.forEach(function(x){
+					
+					if(myDate-Number(x.BookingTime)>60000){
+						test++;
+						console.log('{"place":"'+x.place+'"}');
+						var criteria=JSON.parse('{"place":"'+x.place+'"}');
+						remove("booking",x,function(){
+							console.log(x+"DELETE!!!!!!");
+							test--;
+							if(test==0){
+								console.log("11111111111");
+								client.close();
+								callback();
+							}
+							//findOne("seatStatus",criteria,function(doc){
+							//var newBookingValue='{"booking":'+Number(doc["booking"]-1)+'}';
+							//update("seatStatus",doc,newBookingValue,function(){});
+							//console.log(x+"UPDATED!!!!!!!!");
+							//});
+							
+							
+						});
+						
+						
+					}
+					
+  				});
+				
+				}
+		});
+		
+	});
+}
+
+function findBookingNumber(callback){
+	var temp={};
+	MongoClient.connect(url, function(err, client){
+	var db=client.db('kwongkalai');
+	db.collection("booking").find().toArray(function(err, result) {
+	for (x in result){
+		console.log(result[x].place);
+		//for(key in result[x]){
+		if(temp[result[x].place]==null){
+			temp[result[x].place]=1;
+		}else{
+			temp[result[x].place]++;
+		}
+		if(x==result.length-1){
+			console.log(temp);
+			client.close();
+			callback(temp);
+		}
+		//}
+	}
+	
+});
+	});
+}
+
+function updateBooking(jsonObject){
+	MongoClient.connect(url, function(err, client){
+		var db=client.db('kwongkalai');
+		//var bookingToZero='{"booking":'+ 0 +'}'
+		//var set = JSON.parse('{"$set":'+newData+'}');
+		
+	db.collection("seatStatus").updateMany({},JSON.parse('{"$set":{"booking":'+ 0 +'}}'),function(){
+		
+	for (key in jsonObject){
+		console.log('{"place":"'+key+'"}');
+		console.log('{"booking":'+ jsonObject[key] +'}');
+	var newBookingValue='{"booking":'+ jsonObject[key] +'}';
+	update("seatStatus",JSON.parse('{"place":"'+key+'"}'),newBookingValue,function(){});
+	}
+	client.close();
+	});
+	
+});
+}
 
 app.listen(3000||process.env.PORT,function(){
 				console.log("Connected to MongoDB Server");

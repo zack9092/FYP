@@ -2,35 +2,228 @@
 <android.support.v4.widget.SwipeRefreshLayout android:id="@+id/laySwipe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
 
-<LinearLayout
-    android:id="@+id/linearLayout"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    <LinearLayout
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="fragment1"
-        android:textSize="20sp"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+       >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
 
-    <Button
-        android:id="@+id/testing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/userPassword"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:ems="8"
-        android:text="Testing"
-        android:onClick="testing"
-        android:textAllCaps="false" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@color/colorMint"
+                    android:text="OUHK Seat Finder"
+                    android:textSize="18sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorWhite"
+                    />
 
 
-</LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    >
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="150dp"
+                        android:layout_weight="1.5"
+                        android:layout_margin="2dp"
+                        android:orientation="vertical"
+                        android:background="@color/colorGrapeFruit"
+                        >
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_icon_archary"
+                            android:tint="@color/colorWhite"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp"
+                            android:layout_marginTop="30dp"
+                            android:background="@color/colorGrapeFruitDark"
+                            android:text="Search"
+                            android:textSize="18sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorWhite"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="150dp"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1.5"
+                        android:background="@color/colorPinkRose"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:src="@drawable/resume"
+                            android:tint="@color/colorWhite" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="30dp"
+                            android:background="@color/colorPinkRoseDark"
+                            android:padding="8dp"
+                            android:text="Explore"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <!-- Second Row-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    >
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_margin="2dp"
+                        android:orientation="vertical"
+                        android:background="@color/colorGrass"
+                        >
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/settings"
+                            android:tint="@color/colorWhite"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp"
+                            android:layout_marginTop="30dp"
+                            android:background="@color/colorGrassDark"
+                            android:text="Option"
+                            android:textSize="18sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorWhite"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_margin="2dp"
+                        android:orientation="vertical"
+                        android:background="@color/colorBlueJeans"
+                        >
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/find_jobs"
+                            android:tint="@color/colorWhite"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp"
+                            android:layout_marginTop="30dp"
+                            android:background="@color/colorBlueJeansDark"
+                            android:text="Guide"
+                            android:textSize="18sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorWhite"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_weight="1"
+                        android:layout_margin="2dp"
+                        android:orientation="vertical"
+                        android:background="@color/colorLavander"
+                        >
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/feedback"
+                            android:tint="@color/colorWhite"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="8dp"
+                            android:layout_marginTop="30dp"
+                            android:background="@color/colorLavanderDark"
+                            android:text="FeedBack"
+                            android:textSize="18sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorWhite"
+                            />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+                <!-- End Second Row-->
+                <!-- Third Row-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    >
+
+
+                </LinearLayout>
+                <!-- End Third Row-->
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
+
+    </LinearLayout>
+
 
 </android.support.v4.widget.SwipeRefreshLayout >

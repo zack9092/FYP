@@ -1,6 +1,7 @@
 package com.example.elly_clarkson.fyp;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Point;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -31,6 +32,8 @@ public class MainActivity extends FragmentActivity implements
     public Display display;
     public static int screenWidth;
     public static int screenHeight;
+    public static String studentID;
+    public static boolean booked=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,10 @@ public class MainActivity extends FragmentActivity implements
         display. getSize(size);
         screenWidth = size. x;
         screenHeight = size. y;
+
+        Intent intent = this.getIntent();
+        studentID = intent.getStringExtra("ID");
+
     }
 
     //    控件初始化控件

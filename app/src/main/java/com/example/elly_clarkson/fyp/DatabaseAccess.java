@@ -34,6 +34,6 @@ public class DatabaseAccess {
     }
 
     public Cursor getSeatsLocation(String place){
-        return db.rawQuery("select * from SeatLocation where place = '"+place+"'",new String[]{});
+        return db.rawQuery("select * from SeatLocation where blockFloor = '"+place+"'",new String[]{});
     }
 }

@@ -35,7 +35,7 @@ public class Fragment1 extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item1, null);
-        layout=(SwipeRefreshLayout) view;
+       /* layout=(SwipeRefreshLayout) view;
         layout.setOnRefreshListener(onSwipeToRefresh);
         LinearLayout linearLayout=view.findViewById(R.id.linearLayout);
         Button button=view.findViewById(R.id.testing);
@@ -45,10 +45,10 @@ public class Fragment1 extends Fragment {
         button2.setOnClickListener(onClickListener2);
         linearLayout.addView(button2);
         refresh=new Button(getActivity());
-        refresh.setText("Refresh");
+        refresh.setText(MainActivity.studentID);
      //   refresh.setOnClickListener();
         linearLayout.addView(refresh);
-        textView=(TextView)view.findViewById(R.id.textView1);
+        textView=(TextView)view.findViewById(R.id.textView1);*/
         return view;
     }
 
