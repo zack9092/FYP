@@ -25,4 +25,8 @@ public interface IMyService {
 
     @GET("seatRecommended")
     Call<String> seatRecommended(@Query("floor") int floor);
+
+    @POST("booking")
+    @FormUrlEncoded
+    Call<String> booking(@Field("data")JSONObject jsonObject);
 }

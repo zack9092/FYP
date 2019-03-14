@@ -58,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser(String userName, String password) throws Exception{
+        final String id=userName;
         if(TextUtils.isEmpty(userName)){
             Toast.makeText(this, "User name cannot be null or empty", Toast.LENGTH_SHORT).show();
             return;
@@ -75,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                         logIn = true;
                         Intent intent = new Intent();
                         intent.setClass(LoginActivity.this, MainActivity.class);
+                        intent .putExtra("ID",id);//可放所有基本類別
                         startActivity(intent);
                         finish();
                     }

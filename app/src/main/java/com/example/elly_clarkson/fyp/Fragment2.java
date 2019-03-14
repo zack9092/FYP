@@ -1,6 +1,7 @@
 package com.example.elly_clarkson.fyp;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -83,14 +84,33 @@ public class Fragment2 extends Fragment {
         }
     }
 
+    public void booking(JSONObject jsonObject,int floorPosition){
+        final int  temp= floorPosition;
+        Call<String> call= LoginActivity.iMyService.booking(jsonObject);
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                MainActivity.booked=true;
+                seatRecommended(temp);
+            }
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Toast.makeText(getContext(), "Cannot connect to the server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    };
+
 
 
     private void seatRecommended(int floorPosition) {
+
         Call<String> call = LoginActivity.iMyService.seatRecommended(floorPosition);
+        final int  temp= floorPosition;
         /*
         This is the line which actually sends a network request. Calling enqueue() executes a call asynchronously. It has two callback listeners which will invoked on the main thread
         */
         call.enqueue(new Callback() {
+
             @Override
             public void onResponse(Call call, Response response) {
                 recommendArea.removeAllViews();
@@ -101,18 +121,42 @@ public class Fragment2 extends Fragment {
                         for(int i=0;i<jsonArray.length();i++) {
                             TableRow tableRow=new TableRow(getActivity());
                             TextView status = new TextView(getActivity());
-                            status.setText("   ");
-                            status.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-                            TextView floor = new TextView(getActivity());
+                            status.setText("    ");
+                            float there=(float)jsonArray.getJSONObject(i).getInt("PeopleThere")+jsonArray.getJSONObject(i).getInt("booking");
+                            float max=(float)jsonArray.getJSONObject(i).getInt("MaxSeats");
+                            if(there/max>0.5)
+                                status.setBackgroundColor(Color.YELLOW);
+                            else{
+                                status.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                            }
+                            TextView placeTextView= new TextView(getActivity());
+                            placeTextView.setText("Place: " + jsonArray.getJSONObject(i).getString("place"));
+                           /* TextView floor = new TextView(getActivity());
                             floor.setText("Floor: "+jsonArray.getJSONObject(i).getString("floor"));
                             TextView block = new TextView(getActivity());
-                            block.setText("Block: "+jsonArray.getJSONObject(i).getString("block"));
+                            block.setText("Block: "+jsonArray.getJSONObject(i).getString("block"));*/
                             TextView seatAvailable = new TextView(getActivity());
-                            seatAvailable.setText("Seat Available: "+(jsonArray.getJSONObject(i).getInt("MaxSeats")-jsonArray.getJSONObject(i).getInt("PeopleThere")));
+                            seatAvailable.setText("Seat: "+(jsonArray.getJSONObject(i).getInt("MaxSeats")-jsonArray.getJSONObject(i).getInt("PeopleThere")-jsonArray.getJSONObject(i).getInt("booking"))+"/"+jsonArray.getJSONObject(i).getInt("MaxSeats"));
                             Button button = new Button(getActivity());
-                            button.setText("Book位");
-                            tableRow.addView(floor);
-                            tableRow.addView(block);
+                            final String place=jsonArray.getJSONObject(i).getString("place");
+                            final int booking=jsonArray.getJSONObject(i).getInt("booking");
+                            final JSONArray a= jsonArray;
+                            final int b=i;
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    String json="{\"userID\":\""+MainActivity.studentID+"\",\"place\":"+"\""+place +"\",\"BookingTime\":"+System.currentTimeMillis()+"}";
+                                    System.out.println(json);
+                                    try{JSONObject post_data=new JSONObject(json);
+                                        booking(post_data,temp);
+                                    }catch(Exception e){}
+
+                                }
+                            });
+                            button.setText("Go");
+                            tableRow.addView(placeTextView);
+                           // tableRow.addView(floor);
+                            //tableRow.addView(block);
                             tableRow.addView(seatAvailable);
                             tableRow.addView(status);
                             tableRow.addView(button);
@@ -129,4 +173,5 @@ public class Fragment2 extends Fragment {
             }
     });
     }
+
 }

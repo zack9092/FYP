@@ -22,7 +22,7 @@ import java.util.concurrent.TimeoutException;
 public class Main {
 
      
-private static int COUNT = 1; 
+private static int COUNT = 100; 
 private static final long UPLOAD_RATE_SECONDS = 10;
 private static final String PCAP_FILE_KEY 
     = ReadPacketFile.class.getName() + ".pcapFile"; 
@@ -189,7 +189,7 @@ public static String bytesToHex(byte[] bytes) {
             
             HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
             try {
-                HttpPost request = new HttpPost("http://localhost:3000/devicesPosition");
+                HttpPost request = new HttpPost("http://localhost:3000/devicesPacket");
                 StringEntity params =new StringEntity("details="+toNodejs.toString());
                 request.addHeader("content-type", "application/x-www-form-urlencoded");
                 request.setEntity(params);

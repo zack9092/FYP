@@ -1,6 +1,8 @@
 package com.example.elly_clarkson.fyp;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +21,9 @@ import com.squareup.picasso.Picasso;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,7 +49,7 @@ public class Fragment3 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item3, null);
-        testing = view.findViewById(R.id.testing);
+        //testing = view.findViewById(R.id.testing);
         spinner = view.findViewById(R.id.spinner);
         frame=view.findViewById(R.id.frame);
         ArrayAdapter<String> blockList = new ArrayAdapter<>(this.getActivity(),
@@ -137,7 +142,7 @@ public class Fragment3 extends Fragment {
             Cursor cursor = databaseAccess.getSeatsLocation(fileName);
             while(cursor.moveToNext()){
                 Button test=new Button(getActivity());
-                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(20, 20);
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(40, 40);
                 test.setLayoutParams(params);
                 float x = cursor.getFloat(cursor.getColumnIndex("x"));
                 System.out.println(x);
@@ -181,22 +186,97 @@ public class Fragment3 extends Fragment {
                     obj = new JSONObject(res);
                     System.out.println(obj);
                     try {
-                        float max = obj.getInt("MaxSeats");
+                        final float  max = obj.getInt("MaxSeats");
                         System.out.println(max);
-                        float peopleThere=obj.getInt("PeopleThere");
+                        final float peopleThere=obj.getInt("PeopleThere")+obj.getInt("booking");
                         System.out.println(peopleThere);
                         if(peopleThere/max>0.8) {
                             button1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
                             System.out.println("A");
+                            final JSONObject newJson=obj;
+                            button1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    System.out.println(newJson);
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                    int temp=(int)max-(int)peopleThere;
+                                    if(temp<0) temp=0;
+                                    builder.setMessage("Seat:  "+temp+" / "+(int)max+" , Too many people here")
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // 左方按鈕方法
+                                                }
+                                            });
+                                    AlertDialog about_dialog = builder.create();
+                                    about_dialog.show();
+                                }
+                            });
                         }
                         else if(peopleThere/max>0.5) {
+                            final JSONObject newJson=obj;
                             button1.setBackgroundColor(Color.YELLOW);
-                            System.out.println("B");
+                            button1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    System.out.println(newJson);
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                    builder.setMessage("Seat:  "+((int)max-(int)peopleThere)+" / "+(int)max+" , Do you want to reserve a seat?")
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // 左方按鈕方法
+                                                    try{
+                                                    final String place=newJson.getString("place");
+                                                        String json="{\"userID\":\""+MainActivity.studentID+"\",\"place\":"+"\""+place +"\",\"BookingTime\":"+System.currentTimeMillis()+"}";
+                                                        System.out.println(json);
+                                                        JSONObject post_data=new JSONObject(json);
+                                                            booking(post_data);
+                                                    }catch(Exception e){System.out.println(e);}
+                                                }
+                                            })
+                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // 右方按鈕方法
+                                                }
+                                            });
+                                    AlertDialog about_dialog = builder.create();
+                                    about_dialog.show();
+                                }
+                            });
                         }
                         else {
                             button1.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-                            System.out.println("C");
+                            final JSONObject newJson=obj;
+                            button1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    System.out.println(newJson);
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                    builder.setMessage("Seat:  "+((int)max-(int)peopleThere)+" / "+(int)max+" , Do you want to reserve a seat?")
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // 左方按鈕方法
+                                                    try{
+                                                        final String place=newJson.getString("place");
+                                                        String json="{\"userID\":\""+MainActivity.studentID+"\",\"place\":"+"\""+place +"\",\"BookingTime\":"+System.currentTimeMillis()+"}";
+                                                        System.out.println(json);
+                                                        JSONObject post_data=new JSONObject(json);
+                                                        booking(post_data);
+                                                    }catch(Exception e){
+                                                        System.out.println(e);
+                                                    }
+                                                }
+                                            })
+                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    // 右方按鈕方法
+                                                }
+                                            });
+                                    AlertDialog about_dialog = builder.create();
+                                    about_dialog.show();
+                                }
+                            });
                         }
+
                     }catch(Exception e){
                         System.out.println(e);
                     }
@@ -211,5 +291,17 @@ public class Fragment3 extends Fragment {
             }));
 
     };
-
+    public void booking(JSONObject jsonObject){
+        Call<String> call= LoginActivity.iMyService.booking(jsonObject);
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                MainActivity.booked=true;
+            }
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Toast.makeText(getContext(), "Cannot connect to the server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    };
 }
