@@ -40,7 +40,8 @@ public static String bytesToHex(byte[] bytes) {
     return new String(hexChars);
 }
     public static void main(String[] args) throws PcapNativeException, NotOpenException {
-        final int SLEEP_TIME = 0; //seconds
+        final int SLEEP_TIME = 10; //seconds
+        int mode = 1; // 1 for reading pcap , -1 for check booking
         /*
         //TESTING
         SignalInfo p = new SignalInfo("source","destination",100,1235);
@@ -79,10 +80,15 @@ public static String bytesToHex(byte[] bytes) {
     handle.close(); 
             //END TESTING
 */
+
+
             String basePath = new File("").getAbsolutePath();
             final File folder = new File(basePath+"/radiotap");
             try{              
             while(true){
+            if(mode == 1) {
+            mode *= -1;
+        	System.out.println("Doing packet mode");
             Thread.sleep(SLEEP_TIME * 1000);    
             ArrayList<SignalInfo> signalInfos = new ArrayList<>();
             ArrayList<Device> devices = new ArrayList<>();
@@ -199,20 +205,28 @@ public static String bytesToHex(byte[] bytes) {
                 //handle exception here
                 System.out.println("POST DEVICE LOCATION ERROR");
             }
-            try {
-                HttpGet request = new HttpGet("http://localhost:3000/checkBooking");
-                request.addHeader("content-type", "application");
-                HttpResponse response = httpClient.execute(request);
-                //handle response here...
-            }catch (Exception ex) {
-                //handle exception here
-                System.out.println("CHECK BOOKING ERROR");
+            }        	
+            if(mode == -1) {
+            	mode *= -1;
+            	System.out.println("Doing checking mode");
+            	Thread.sleep(SLEEP_TIME * 1000); 
+            	HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
+                try {
+                    HttpGet request = new HttpGet("http://localhost:3000/checkBooking");
+                    request.addHeader("content-type", "application");
+                    HttpResponse response = httpClient.execute(request);
+                    //handle response here...
+                }catch (Exception ex) {
+                    //handle exception here
+                    System.out.println("CHECK BOOKING ERROR");
+                }           	
             }
-            break;
-            }  
-            }catch(Exception e) {
-                e.printStackTrace();
-            }
+        }
+        }catch (Exception ex) {
+            //handle exception here
+            System.out.println("CHECK BOOKING ERROR");
+        }
     }
 }
+
 

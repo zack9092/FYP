@@ -1,0 +1,7 @@
+sudo airmon-ng start wlan0 
+sudo tcpdump -ni wlan0mon -w /var/tmp/wlan.pcap
+ifconfig -a
+wireshark -nr /var/tmp/wlan.pcap
+
+sudo tcpdump -ni wlan0mon -G 5 -w wlan.pcap-%s 
+
