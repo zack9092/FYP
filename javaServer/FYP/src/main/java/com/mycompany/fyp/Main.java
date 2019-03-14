@@ -101,10 +101,15 @@ public static String bytesToHex(byte[] bytes) {
                     System.out.println(PCAP_FILE);
                     long timeDifference = (currentSeconds - fileSceonds);
                     System.out.println("The time difference between the pcap file and now is: "+timeDifference);
-//                    if(timeDifference > UPLOAD_RATE_SECONDS) {
-//                    	System.out.println("Bad file");
-//                    	continue;
-//                    }
+                    if(timeDifference > UPLOAD_RATE_SECONDS) {
+                    	System.out.println("Bad file");
+                		if(fileEntry[i].delete()){
+                			System.out.println(fileEntry[i].getName() + " is deleted!");
+                		}else{
+                			System.out.println("Delete operation is failed.");
+                		}
+                    	continue;
+                    }
                     //start processing packets
                     try { 
                       handle = Pcaps.openOffline(PCAP_FILE, PcapHandle.TimestampPrecision.NANO); 
