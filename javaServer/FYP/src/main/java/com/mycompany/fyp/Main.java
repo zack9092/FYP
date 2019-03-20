@@ -23,7 +23,7 @@ public class Main {
 
      
 private static int COUNT = 100; 
-private static final long UPLOAD_RATE_SECONDS = 10;
+private static final long UPLOAD_RATE_SECONDS = 10; // how many seconds until consider a old file
 private static final String PCAP_FILE_KEY 
     = ReadPacketFile.class.getName() + ".pcapFile"; 
 private static String PCAP_FILE 
@@ -40,7 +40,7 @@ public static String bytesToHex(byte[] bytes) {
     return new String(hexChars);
 }
     public static void main(String[] args) throws PcapNativeException, NotOpenException {
-        final int SLEEP_TIME = 10; //seconds
+        final int SLEEP_TIME = 5; //seconds
         int mode = 1; // 1 for reading pcap , -1 for check booking
         /*
         //TESTING
@@ -107,15 +107,15 @@ public static String bytesToHex(byte[] bytes) {
                     System.out.println(PCAP_FILE);
                     long timeDifference = (currentSeconds - fileSceonds);
                     System.out.println("The time difference between the pcap file and now is: "+timeDifference);
-                    if(timeDifference > UPLOAD_RATE_SECONDS) {
-                    	System.out.println("Bad file");
-                		if(fileEntry[i].delete()){
-                			System.out.println(fileEntry[i].getName() + " is deleted!");
-                		}else{
-                			System.out.println("Delete operation is failed.");
-                		}
-                    	continue;
-                    }
+//                    if(timeDifference > UPLOAD_RATE_SECONDS) {
+//                    	System.out.println("Bad file");
+//                		if(fileEntry[i].delete()){
+//                			System.out.println(fileEntry[i].getName() + " is deleted!");
+//                		}else{
+//                			System.out.println("Delete operation is failed.");
+//                		}
+//                    	continue;
+//                    }
                     //start processing packets
                     try { 
                       handle = Pcaps.openOffline(PCAP_FILE, PcapHandle.TimestampPrecision.NANO); 
@@ -141,7 +141,7 @@ public static String bytesToHex(byte[] bytes) {
                         byte[] byteHeader = packet.getHeader().getRawData();
                         int radiotapHeaderLength = byteHeader[2];
                         System.out.println("This packet have a length of :" + radiotapHeaderLength);
-                        rssi = byteHeader[30];
+                        rssi = byteHeader[14];//30 for TPlink , 14 for CNTEPE
                         System.out.println("This packet have a RSSI of :" + rssi);
                         // Mapping packet info into signalInfo object
                         SignalInfo p = new SignalInfo(sourceMac,receiverMac,rssi,timeStamp);
@@ -224,7 +224,7 @@ public static String bytesToHex(byte[] bytes) {
         }
         }catch (Exception ex) {
             //handle exception here
-            System.out.println("CHECK BOOKING ERROR");
+            ex.printStackTrace();
         }
     }
 }

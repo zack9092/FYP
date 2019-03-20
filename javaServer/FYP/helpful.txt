@@ -3,5 +3,9 @@ sudo tcpdump -ni wlan0mon -w /var/tmp/wlan.pcap
 ifconfig -a
 wireshark -nr /var/tmp/wlan.pcap
 
+
+sudo airmon-ng start wlan0 
+cd Desktop/fyp/FYP/javaServer/FYP/radiotap/
 sudo tcpdump -ni wlan0mon -G 5 -w wlan.pcap-%s 
 
+wlan.sa == E8:E8:B7:58:47:A9

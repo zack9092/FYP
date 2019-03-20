@@ -85,6 +85,11 @@ public static void main(String[] args){
     	Set<String> deviceMapKeys = deviceMap.keySet();
     	HashMap<String, JSONObject> newDeviceMap = new HashMap<>();
     	for(String s :deviceMapKeys) {
+    		//try only one MAC address
+    		if(!s.equalsIgnoreCase("E8E8B75847A9")) {
+    			System.out.println(s);
+    			continue;
+    		}
     		JSONArray ss = deviceMap.get(s);
     		long newestTimeStamp = 0;
     		int newestIndex = 0;
@@ -108,12 +113,17 @@ public static void main(String[] args){
         String basePath = new File("").getAbsolutePath();
 		System.out.println();
 		//knn(basePath+"/knnData"+"/apl_train.txt",basePath+"/knnData"+"/apl_test.txt",1,2);
+		
 //	    Creating the array for prediction
 		List<TestRecord> predictList = new ArrayList<>();	
 		
 //		Initialize the array
 
 	    for(String s :deviceMapKeys) {
+    		//try only one MAC address
+    		if(!s.equalsIgnoreCase("E8E8B75847A9")) {
+    			continue;
+    		}
 	    	double[] da = new double[NUM_OF_ATTRIBUTE];
 	    	da[0] = 00;
 			da[0] = newDeviceMap.get(s).getDouble("RSSI");
