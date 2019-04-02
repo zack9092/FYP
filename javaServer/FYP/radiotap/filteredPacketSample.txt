@@ -1,0 +1,13 @@
+"E8E8B75847A9":[{"timeStamp":1554044026925,"RSSI":-45,"responsibleRouter":"AAAAAAAAAAAA"}
+
+"E8E8B75847A9":[{"timeStamp":1554044026925,"RSSI":-45,"responsibleRouter":"00E02C310F37"}
+
+E8E8B75847A9=[
+{"timeStamp":1554044026925,"RSSI":-45,"responsibleRouter":"00E02C310F37"},
+{"timeStamp":1554044028988,"RSSI":-33,"responsibleRouter":"00E02C310F37"},
+{"timeStamp":1554044029009,"RSSI":-33,"responsibleRouter":"00E02C310F37"},
+{"timeStamp":1554044031238,"RSSI":-43,"responsibleRouter":"00E02C310F37"},
+{"timeStamp":1554044026925,"RSSI":-45,"responsibleRouter":"AAAAAAAAAAAA"},
+{"timeStamp":1554044028988,"RSSI":-33,"responsibleRouter":"AAAAAAAAAAAA"},
+{"timeStamp":1554044029009,"RSSI":-33,"responsibleRouter":"AAAAAAAAAAAA"},
+{"timeStamp":1554044031238,"RSSI":-43,"responsibleRouter":"AAAAAAAAAAAA"}]

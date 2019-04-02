@@ -3,12 +3,15 @@ package com.mycompany.fyp;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject; 
 import org.pcap4j.core.NotOpenException; 
 import org.pcap4j.core.PcapHandle;
@@ -22,12 +25,14 @@ import java.util.concurrent.TimeoutException;
 public class Main {
 
      
-private static int COUNT = 100; 
+private static int COUNT = 1000; 
 private static final long UPLOAD_RATE_SECONDS = 10; // how many seconds until consider a old file
 private static final String PCAP_FILE_KEY 
     = ReadPacketFile.class.getName() + ".pcapFile"; 
 private static String PCAP_FILE 
     = System.getProperty(PCAP_FILE_KEY, "C:/Users/User/Desktop/testing.pcap"); 
+private static String receiverMac = "AAAAAAAAAAAA";  
+//mac of the wireless adapter["00E02C310F37","00E02C312195","00E02F60EA64"]
 
 private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 public static String bytesToHex(byte[] bytes) {
@@ -134,7 +139,6 @@ public static String bytesToHex(byte[] bytes) {
 //                        }
                         String sourceMac = bytesToHex(Arrays.copyOfRange(bytePayload,10,16));
                         System.out.println("This packet have a source Mac of :" + sourceMac);
-                        String receiverMac = "AABBCCDDEEFF";//mac of the wireless adapter
                         System.out.println("This packet have a receiver Mac of :" + receiverMac);
                         int rssi = 100;
                         long timeStamp = handle.getTimestamp().getTime();
@@ -201,6 +205,9 @@ public static String bytesToHex(byte[] bytes) {
                 request.setEntity(params);
                 HttpResponse response = httpClient.execute(request);
                 //handle response here...
+                HttpEntity entity = response.getEntity();
+                String content = EntityUtils.toString(entity);
+                System.out.println(content);
             }catch (Exception ex) {
                 //handle exception here
                 System.out.println("POST DEVICE LOCATION ERROR");
@@ -216,6 +223,9 @@ public static String bytesToHex(byte[] bytes) {
                     request.addHeader("content-type", "application");
                     HttpResponse response = httpClient.execute(request);
                     //handle response here...
+                    HttpEntity entity = response.getEntity();
+                    String content = EntityUtils.toString(entity);
+                    System.out.println(content);
                 }catch (Exception ex) {
                     //handle exception here
                     System.out.println("CHECK BOOKING ERROR");

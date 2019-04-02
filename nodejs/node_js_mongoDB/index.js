@@ -49,6 +49,8 @@ app.post('/devicesPacket',function(req,res,next){
 	console.log(devices);
 //Store all device into an array
 	allPackets.push(devices);
+	res.setHeader('Content-Type', 'text/plain');
+	res.end("Success: Device added to array")
 });
 
 
@@ -56,6 +58,7 @@ app.get('/getDeviceArray',function(req,res,next){
 	console.log('/getDeviceArray');
 	var tmp = {};
 	tmp["allPackets"] = allPackets;
+	allPackets = [];
 //Store all device into an array
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(tmp));
@@ -66,8 +69,8 @@ app.post('/deviceLocation',function(req,res,next){
 	var tmp = req.body;
 	var newJson = JSON.parse(tmp['Details']);
 	console.log(newJson);
-//Store all device into an array
-    	res.json();
+    	res.setHeader('Content-Type', 'text/plain');
+	res.end("Success : Device location posted");
 });
 
 

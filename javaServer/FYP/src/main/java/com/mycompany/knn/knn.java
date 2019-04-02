@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -143,6 +144,9 @@ public static void main(String[] args){
             request.setEntity(params);
             HttpResponse response = httpClient.execute(request);
             //handle response here...
+            HttpEntity entity = response.getEntity();
+            String content = EntityUtils.toString(entity);
+            System.out.println(content);
         }catch (Exception ex) {
             //handle exception here
             System.out.println("POST LOCATION ERROR");

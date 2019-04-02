@@ -1,10 +1,10 @@
 {
-  "name": "node_js_mongodb",
+  "name": "IT27FYP",
   "version": "1.0.0",
   "description": "Try to connect mongoDB",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "KKL",
   "license": "ISC",
