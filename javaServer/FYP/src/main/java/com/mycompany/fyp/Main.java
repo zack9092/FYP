@@ -223,9 +223,9 @@ public static String bytesToHex(byte[] bytes) {
                     request.addHeader("content-type", "application");
                     HttpResponse response = httpClient.execute(request);
                     //handle response here...
-                    HttpEntity entity = response.getEntity();
-                    String content = EntityUtils.toString(entity);
-                    System.out.println(content);
+//                    HttpEntity entity = response.getEntity();
+//                    String content = EntityUtils.toString(entity);
+//                    System.out.println(content);
                 }catch (Exception ex) {
                     //handle exception here
                     System.out.println("CHECK BOOKING ERROR");

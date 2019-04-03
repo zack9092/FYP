@@ -29,7 +29,7 @@ import org.json.JSONObject;
  * @author User
  */
 public class knn {
-    public static final String[] locLibrary= {"","","","","","","C4A","C4B","C4C",""};
+    public static final String[] locLibrary= {"","","","","","","C4A","C5A","C5B",""};
 
     
 public static void main(String[] args){	
@@ -158,8 +158,8 @@ public static void main(String[] args){
 		final long startTime = System.currentTimeMillis();
 		JSONObject locations = new JSONObject();
 		locations.put("C4A", 0);
-		locations.put("C4B", 0);
-		locations.put("C4C", 0);
+		locations.put("C5A", 0);
+              locations.put("C5B", 0);
 		
 		// make sure the input arguments are legal
 		if(K <= 0){

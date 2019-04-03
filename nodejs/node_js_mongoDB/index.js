@@ -156,7 +156,7 @@ app.get('/checkBooking',function(req,res){
 				
 		});
 	});
-	
+	res.end();
 });
 
 
@@ -387,8 +387,9 @@ function checkBooking(myDate,callback){
   				});
 				
 				}
+			
+
 		});
-		
 	});
 }
 
