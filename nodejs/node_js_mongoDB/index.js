@@ -91,16 +91,21 @@ app.get('/seatStatus',function(req,res){
 });
 
 app.get('/seatRecommended',function(req,res){
+	var lowerAndUpper={};
 	var lowerFloor=[];
 	var upperFloor=[];
 	console.log("/seatRecommended");
 	findLowerFloor(req.query.floor,function(result){
-		lowerFloor=result;
+		lowerAndUpper['lowerFloor']=result;
+		//lowerFloor=result;
 		findUpperFloor(req.query.floor,function(result2){
-			upperFloor=result2;
-			findNearestSeat(req.query.floor,lowerFloor,upperFloor,function(finalResult){
-				res.json(finalResult);
-			});
+			lowerAndUpper['upperFloor']=result2;
+			//upperFloor=result2;
+			//findNearestSeat(req.query.floor,lowerFloor,upperFloor,function(finalResult){
+				//res.json(finalResult);
+			//});
+			console.log(lowerAndUpper);
+			res.json(lowerAndUpper);
 		});
 	});
 });
@@ -135,7 +140,7 @@ app.get('/checkBooking',function(req,res){
 		
 		findBookingNumber(function(temp){
 				updateBooking(temp);
-				res.json();
+				
 		});
 	});
 	
@@ -149,7 +154,7 @@ function findLowerFloor(floor,callback){
 	MongoClient.connect(url, function(err, client){
   				if (err) throw err;
  				var db=client.db('kwongkalai');
- 				 db.collection("seatStatus").find(criteria).sort( { floor: -1 } ).toArray(function(err, result) {
+ 				 db.collection("seatStatus").find(criteria,{fields:{_id: 0}}).sort( { floor: -1 } ).toArray(function(err, result) {
    		 		if (err) throw err;
 				//console.log(result);
 				for(var x in result){
@@ -177,7 +182,7 @@ function findUpperFloor(floor,callback){
 	MongoClient.connect(url, function(err, client){
   				if (err) throw err;
  				var db=client.db('kwongkalai');
- 				 db.collection("seatStatus").find(criteria).sort( { floor: 1 } ).toArray(function(err, result) {
+ 				 db.collection("seatStatus").find(criteria,{fields:{_id: 0}}).sort( { floor: 1 } ).toArray(function(err, result) {
    		 		if (err) throw err;
 				//console.log(result);
 				for(var x in result){
@@ -379,6 +384,9 @@ function findBookingNumber(callback){
 	MongoClient.connect(url, function(err, client){
 	var db=client.db('kwongkalai');
 	db.collection("booking").find().toArray(function(err, result) {
+		if(result.length==0){
+			db.collection("seatStatus").updateMany({},JSON.parse('{"$set":{"booking":'+ 0 +'}}'));
+		}
 	for (x in result){
 		console.log(result[x].place);
 		//for(key in result[x]){
@@ -391,6 +399,7 @@ function findBookingNumber(callback){
 			console.log(temp);
 			client.close();
 			callback(temp);
+			console.log("Testing FindBookingNubmer function");
 		}
 		//}
 	}

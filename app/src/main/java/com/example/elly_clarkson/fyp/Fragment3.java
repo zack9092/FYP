@@ -37,10 +37,10 @@ public class Fragment3 extends Fragment {
     TextView testing;
     ImageView imageView;
     FrameLayout frame;
-    char selectedBlock='A';
+    //char selectedBlock='A';
     String fileName;
     String pathName;
-    int selectedFloor=0;
+   // int selectedFloor=0;
     int width=0;
     int height=0;
     JSONObject obj;
@@ -52,6 +52,7 @@ public class Fragment3 extends Fragment {
         //testing = view.findViewById(R.id.testing);
         spinner = view.findViewById(R.id.spinner);
         frame=view.findViewById(R.id.frame);
+
         ArrayAdapter<String> blockList = new ArrayAdapter<>(this.getActivity(),
                 android.R.layout.simple_spinner_dropdown_item,
                 block);
@@ -62,7 +63,7 @@ public class Fragment3 extends Fragment {
                 android.R.layout.simple_spinner_dropdown_item,
                 floor);
         spinner2.setAdapter(floorList);
-        spinner2.setOnItemSelectedListener(new onItemSelectedListener2());
+        spinner2.setOnItemSelectedListener(new onItemSelectedListener());
 
         return view;
     }
@@ -71,7 +72,9 @@ public class Fragment3 extends Fragment {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             frame.removeAllViews();
             final ImageView imageView = new ImageView(getActivity());
-            selectedBlock=(char)('A'+position);
+            System.out.println(""+spinner.getSelectedItem().toString().charAt(6)+ spinner2.getSelectedItem().toString().charAt(0));
+            String selectedBlock=""+spinner.getSelectedItem().toString().charAt(6);
+            String selectedFloor=""+spinner2.getSelectedItem().toString().charAt(0);
            // testing.setText("BLOCK"+selectedBlock+" "+floor[selectedFloor]);
             fileName=selectedBlock+""+selectedFloor;
             pathName="http://10.0.2.2:3000/ou/"+fileName+".png";
@@ -89,9 +92,11 @@ public class Fragment3 extends Fragment {
             databaseAccess.open();
             Cursor cursor = databaseAccess.getSeatsLocation(fileName);
             while(cursor.moveToNext()){
-                Button test=new Button(getActivity());
-                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(20, 20);
+                ImageButton test=new ImageButton(getActivity());
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(40, 70);
                 test.setLayoutParams(params);
+                test.setScaleType(ImageView.ScaleType.FIT_XY);
+                test.setBackgroundColor(Color.TRANSPARENT);
                 float x = cursor.getFloat(cursor.getColumnIndex("x"));
                 System.out.println(x);
                 float y = cursor.getFloat(cursor.getColumnIndex("y"));
@@ -119,7 +124,7 @@ public class Fragment3 extends Fragment {
         }
     }
 
-    public class onItemSelectedListener2 implements OnItemSelectedListener{
+    /*public class onItemSelectedListener2 implements OnItemSelectedListener{
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             frame.removeAllViews();
             ImageView imageView = new ImageView(getActivity());
@@ -130,6 +135,7 @@ public class Fragment3 extends Fragment {
             Picasso.get().load(pathName).into(imageView);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             frame.addView(imageView);
+
             System.out.println(pathName);
             ConstraintLayout constraintLayout = new ConstraintLayout(getContext());
             ConstraintLayout.LayoutParams constraintLayoutParams = new ConstraintLayout.LayoutParams(
@@ -141,9 +147,12 @@ public class Fragment3 extends Fragment {
             databaseAccess.open();
             Cursor cursor = databaseAccess.getSeatsLocation(fileName);
             while(cursor.moveToNext()){
-                Button test=new Button(getActivity());
-                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(40, 40);
+                ImageButton test=new ImageButton(getActivity());
+
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(40, 70);
                 test.setLayoutParams(params);
+                test.setScaleType(ImageView.ScaleType.FIT_XY);
+                test.setBackgroundColor(Color.TRANSPARENT);
                 float x = cursor.getFloat(cursor.getColumnIndex("x"));
                 System.out.println(x);
                 float y = cursor.getFloat(cursor.getColumnIndex("y"));
@@ -170,13 +179,13 @@ public class Fragment3 extends Fragment {
         public void onNothingSelected(AdapterView<?> parent) {
         }
 
-    }
+    }*/
     public static void xxx(){
         System.out.println("XXX");
     }
 
-    private void getSeatStatus(String place_id,float x,float y,Button button){
-        final Button button1=button;
+    private void getSeatStatus(String place_id,float x,float y,ImageButton button){
+        final ImageButton button1=button;
         final float tempX=x;
         final float tempY=y;
     //   final Cursor tempCursor=cursor;
@@ -191,7 +200,8 @@ public class Fragment3 extends Fragment {
                         final float peopleThere=obj.getInt("PeopleThere")+obj.getInt("booking");
                         System.out.println(peopleThere);
                         if(peopleThere/max>0.8) {
-                            button1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+                            //button1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+                            button1.setImageResource(R.drawable.redpeople);
                             System.out.println("A");
                             final JSONObject newJson=obj;
                             button1.setOnClickListener(new View.OnClickListener() {
@@ -214,7 +224,8 @@ public class Fragment3 extends Fragment {
                         }
                         else if(peopleThere/max>0.5) {
                             final JSONObject newJson=obj;
-                            button1.setBackgroundColor(Color.YELLOW);
+                           // button1.setBackgroundColor(Color.YELLOW);
+                            button1.setImageResource(R.drawable.yellowpeople);
                             button1.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -244,14 +255,15 @@ public class Fragment3 extends Fragment {
                             });
                         }
                         else {
-                            button1.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                            //button1.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                            button1.setImageResource(R.drawable.greenpeople);
                             final JSONObject newJson=obj;
                             button1.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     System.out.println(newJson);
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                    builder.setMessage("Seat:  "+((int)max-(int)peopleThere)+" / "+(int)max+" , Do you want to reserve a seat?")
+                                    builder.setMessage("Seat:  "+((int)max-(int)peopleThere)+" / "+(int)max+" , Do you want to go there?")
                                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     // 左方按鈕方法

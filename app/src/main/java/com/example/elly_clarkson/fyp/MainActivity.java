@@ -22,7 +22,7 @@ import java.util.List;
 public class MainActivity extends FragmentActivity implements
         ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
 
-    private FragmentTabHost mTabHost;
+    public static FragmentTabHost mTabHost;
     private LayoutInflater layoutInflater;
     private Class fragmentArray[] = { Fragment1.class, Fragment2.class, Fragment3.class };
     private int imageViewArray[] = { R.drawable.tab_home_btn, R.drawable.tab_search_btn,R.drawable.tab_explore_btn};
@@ -34,11 +34,22 @@ public class MainActivity extends FragmentActivity implements
     public static int screenHeight;
     public static String studentID;
     public static boolean booked=false;
+    public ImageButton logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        logout=(ImageButton)findViewById(R.id.logout);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         initView();//初始化控件
         initPage();//初始化页面
         Display display = getWindowManager(). getDefaultDisplay();

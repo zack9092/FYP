@@ -21,6 +21,10 @@ public class Fragment1 extends Fragment {
     Button refresh;
     TextView textView;
     SwipeRefreshLayout layout;
+    public Button search;
+    public ImageButton searchImg;
+    public Button explore;
+    public ImageButton exploreImg;
 
     private OnClickListener  onClickListener= new View.OnClickListener() {
         public void onClick(View v) {
@@ -35,6 +39,16 @@ public class Fragment1 extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item1, null);
+        search = (Button)view.findViewById(R.id.search);
+        explore = (Button)view.findViewById(R.id.explore);
+        searchImg=(ImageButton)view.findViewById(R.id.searchImg);
+        exploreImg=(ImageButton)view.findViewById(R.id.exploreImg);
+
+        search.setOnClickListener(new TabOnClickListener());
+        explore.setOnClickListener(new TabOnClickListener());
+        searchImg.setOnClickListener(new TabOnClickListener());
+        exploreImg.setOnClickListener(new TabOnClickListener());
+
        /* layout=(SwipeRefreshLayout) view;
         layout.setOnRefreshListener(onSwipeToRefresh);
         LinearLayout linearLayout=view.findViewById(R.id.linearLayout);
@@ -51,9 +65,6 @@ public class Fragment1 extends Fragment {
         textView=(TextView)view.findViewById(R.id.textView1);*/
         return view;
     }
-
-
-
     public void testing(){
         textView.setText("Clicked!!");
     }
@@ -88,5 +99,14 @@ public class Fragment1 extends Fragment {
         }
     };
 
+    public class TabOnClickListener implements View.OnClickListener{
+        public void onClick(View v){
+            if(v.getId()==R.id.search||v.getId()==R.id.searchImg){
+            MainActivity.mTabHost.setCurrentTab(1);
+            }else if(v.getId()==R.id.explore||v.getId()==R.id.exploreImg){
+                MainActivity.mTabHost.setCurrentTab(2);
+            }
+        }
+    }
 
 }

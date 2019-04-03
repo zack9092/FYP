@@ -43,33 +43,38 @@
                     android:orientation="horizontal"
                     android:weightSum="3"
                     >
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="150dp"
-                        android:layout_weight="1.5"
                         android:layout_margin="2dp"
-                        android:orientation="vertical"
+                        android:layout_weight="1.5"
                         android:background="@color/colorGrapeFruit"
-                        >
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_icon_archary"
-                            android:tint="@color/colorWhite"
-                            />
-                        <TextView
+                        android:orientation="vertical">
+
+                        <ImageButton
+
+                            android:id="@+id/searchImg"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:padding="8dp"
-                            android:layout_marginTop="30dp"
+                            android:layout_weight="0.5"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_icon_archary"
+                            android:background="#0000"
+                            android:tint="@color/colorWhite" />
+
+                        <Button
+                            android:id="@+id/search"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textAllCaps="false"
                             android:background="@color/colorGrapeFruitDark"
+                            android:padding="8dp"
                             android:text="Search"
-                            android:textSize="18sp"
                             android:textAlignment="center"
                             android:textColor="@color/colorWhite"
-                            />
+                            android:textSize="18sp" />
 
                     </LinearLayout>
 
@@ -81,20 +86,24 @@
                         android:background="@color/colorPinkRose"
                         android:orientation="vertical">
 
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="20dp"
-                            android:src="@drawable/resume"
-                            android:tint="@color/colorWhite" />
-
-                        <TextView
+                        <ImageButton
+                            android:id="@+id/exploreImg"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginTop="30dp"
+                            android:layout_weight="0.5"
+                            android:layout_gravity="center"
+                            android:src="@drawable/resume"
+                            android:background="#0000"
+                            android:tint="@color/colorWhite" />
+
+                        <Button
+                            android:id="@+id/explore"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:background="@color/colorPinkRoseDark"
                             android:padding="8dp"
+                            android:textAllCaps="false"
                             android:text="Explore"
                             android:textAlignment="center"
                             android:textColor="@color/colorWhite"
@@ -128,12 +137,13 @@
                             android:src="@drawable/settings"
                             android:tint="@color/colorWhite"
                             />
-                        <TextView
+                        <Button
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:padding="8dp"
                             android:layout_marginTop="30dp"
                             android:background="@color/colorGrassDark"
+                            android:textAllCaps="false"
                             android:text="Option"
                             android:textSize="18sp"
                             android:textAlignment="center"
@@ -158,12 +168,13 @@
                             android:src="@drawable/find_jobs"
                             android:tint="@color/colorWhite"
                             />
-                        <TextView
+                        <Button
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:padding="8dp"
                             android:layout_marginTop="30dp"
                             android:background="@color/colorBlueJeansDark"
+                            android:textAllCaps="false"
                             android:text="Guide"
                             android:textSize="18sp"
                             android:textAlignment="center"
@@ -185,15 +196,17 @@
                             android:layout_height="30dp"
                             android:layout_marginTop="20dp"
                             android:layout_gravity="center"
+
                             android:src="@drawable/feedback"
                             android:tint="@color/colorWhite"
                             />
-                        <TextView
+                        <Button
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:padding="8dp"
                             android:layout_marginTop="30dp"
                             android:background="@color/colorLavanderDark"
+                            android:textAllCaps="false"
                             android:text="FeedBack"
                             android:textSize="18sp"
                             android:textAlignment="center"
