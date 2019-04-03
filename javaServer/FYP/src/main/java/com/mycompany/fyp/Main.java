@@ -3,12 +3,15 @@ package com.mycompany.fyp;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject; 
 import org.pcap4j.core.NotOpenException; 
 import org.pcap4j.core.PcapHandle;
@@ -22,12 +25,14 @@ import java.util.concurrent.TimeoutException;
 public class Main {
 
      
-private static int COUNT = 1; 
-private static final long UPLOAD_RATE_SECONDS = 10;
+private static int COUNT = 1000; 
+private static final long UPLOAD_RATE_SECONDS = 10; // how many seconds until consider a old file
 private static final String PCAP_FILE_KEY 
     = ReadPacketFile.class.getName() + ".pcapFile"; 
 private static String PCAP_FILE 
     = System.getProperty(PCAP_FILE_KEY, "C:/Users/User/Desktop/testing.pcap"); 
+private static String receiverMac = "AAAAAAAAAAAA";  
+//mac of the wireless adapter["00E02C310F37","00E02C312195","00E02F60EA64"]
 
 private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 public static String bytesToHex(byte[] bytes) {
@@ -40,7 +45,8 @@ public static String bytesToHex(byte[] bytes) {
     return new String(hexChars);
 }
     public static void main(String[] args) throws PcapNativeException, NotOpenException {
-        final int SLEEP_TIME = 0; //seconds
+        final int SLEEP_TIME = 5; //seconds
+        int mode = 1; // 1 for reading pcap , -1 for check booking
         /*
         //TESTING
         SignalInfo p = new SignalInfo("source","destination",100,1235);
@@ -79,10 +85,15 @@ public static String bytesToHex(byte[] bytes) {
     handle.close(); 
             //END TESTING
 */
+
+
             String basePath = new File("").getAbsolutePath();
             final File folder = new File(basePath+"/radiotap");
             try{              
             while(true){
+            if(mode == 1) {
+            mode *= -1;
+        	System.out.println("Doing packet mode");
             Thread.sleep(SLEEP_TIME * 1000);    
             ArrayList<SignalInfo> signalInfos = new ArrayList<>();
             ArrayList<Device> devices = new ArrayList<>();
@@ -103,6 +114,11 @@ public static String bytesToHex(byte[] bytes) {
                     System.out.println("The time difference between the pcap file and now is: "+timeDifference);
 //                    if(timeDifference > UPLOAD_RATE_SECONDS) {
 //                    	System.out.println("Bad file");
+//                		if(fileEntry[i].delete()){
+//                			System.out.println(fileEntry[i].getName() + " is deleted!");
+//                		}else{
+//                			System.out.println("Delete operation is failed.");
+//                		}
 //                    	continue;
 //                    }
                     //start processing packets
@@ -123,14 +139,13 @@ public static String bytesToHex(byte[] bytes) {
 //                        }
                         String sourceMac = bytesToHex(Arrays.copyOfRange(bytePayload,10,16));
                         System.out.println("This packet have a source Mac of :" + sourceMac);
-                        String receiverMac = "AABBCCDDEEFF";//mac of the wireless adapter
                         System.out.println("This packet have a receiver Mac of :" + receiverMac);
                         int rssi = 100;
                         long timeStamp = handle.getTimestamp().getTime();
                         byte[] byteHeader = packet.getHeader().getRawData();
                         int radiotapHeaderLength = byteHeader[2];
                         System.out.println("This packet have a length of :" + radiotapHeaderLength);
-                        rssi = byteHeader[30];
+                        rssi = byteHeader[14];//30 for TPlink , 14 for CNTEPE
                         System.out.println("This packet have a RSSI of :" + rssi);
                         // Mapping packet info into signalInfo object
                         SignalInfo p = new SignalInfo(sourceMac,receiverMac,rssi,timeStamp);
@@ -184,30 +199,44 @@ public static String bytesToHex(byte[] bytes) {
             
             HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
             try {
-                HttpPost request = new HttpPost("http://localhost:3000/devicesPosition");
+                HttpPost request = new HttpPost("http://localhost:3000/devicesPacket");
                 StringEntity params =new StringEntity("details="+toNodejs.toString());
                 request.addHeader("content-type", "application/x-www-form-urlencoded");
                 request.setEntity(params);
                 HttpResponse response = httpClient.execute(request);
                 //handle response here...
+                HttpEntity entity = response.getEntity();
+                String content = EntityUtils.toString(entity);
+                System.out.println(content);
             }catch (Exception ex) {
                 //handle exception here
                 System.out.println("POST DEVICE LOCATION ERROR");
             }
-            try {
-                HttpGet request = new HttpGet("http://localhost:3000/checkBooking");
-                request.addHeader("content-type", "application");
-                HttpResponse response = httpClient.execute(request);
-                //handle response here...
-            }catch (Exception ex) {
-                //handle exception here
-                System.out.println("CHECK BOOKING ERROR");
+            }        	
+            if(mode == -1) {
+            	mode *= -1;
+            	System.out.println("Doing checking mode");
+            	Thread.sleep(SLEEP_TIME * 1000); 
+            	HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
+                try {
+                    HttpGet request = new HttpGet("http://localhost:3000/checkBooking");
+                    request.addHeader("content-type", "application");
+                    HttpResponse response = httpClient.execute(request);
+                    //handle response here...
+                    HttpEntity entity = response.getEntity();
+                    String content = EntityUtils.toString(entity);
+                    System.out.println(content);
+                }catch (Exception ex) {
+                    //handle exception here
+                    System.out.println("CHECK BOOKING ERROR");
+                }           	
             }
-            break;
-            }  
-            }catch(Exception e) {
-                e.printStackTrace();
-            }
+        }
+        }catch (Exception ex) {
+            //handle exception here
+            ex.printStackTrace();
+        }
     }
 }
+
 

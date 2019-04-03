@@ -42,13 +42,15 @@ app.post('/login',function(req,res,next){
 });
 
 //Receiving JSON from java Server
-app.post('/devicesPosition',function(req,res,next){
-	console.log('/devicesPosition');
+app.post('/devicesPacket',function(req,res,next){
+	console.log('/devicesPacket');
 	var post_data=req.body;
 	var devices = JSON.parse(post_data.details);
 	console.log(devices);
 //Store all device into an array
 	allPackets.push(devices);
+	res.setHeader('Content-Type', 'text/plain');
+	res.end("Success: Device added to array")
 });
 
 
@@ -56,10 +58,21 @@ app.get('/getDeviceArray',function(req,res,next){
 	console.log('/getDeviceArray');
 	var tmp = {};
 	tmp["allPackets"] = allPackets;
+	allPackets = [];
 //Store all device into an array
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(tmp));
 });
+
+app.post('/deviceLocation',function(req,res,next){
+	console.log('/deviceLocation');
+	var tmp = req.body;
+	var newJson = JSON.parse(tmp['Details']);
+	console.log(newJson);
+    	res.setHeader('Content-Type', 'text/plain');
+	res.end("Success : Device location posted");
+});
+
 
 app.get('/seats',function(req,res){
 	console.log("/seats");

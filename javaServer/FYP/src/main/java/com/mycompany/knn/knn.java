@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -28,27 +29,30 @@ import org.json.JSONObject;
  * @author User
  */
 public class knn {
+    public static final String[] locLibrary= {"","","","","","","C4A","C4B","C4C",""};
+
     
 public static void main(String[] args){	
-    
-/*    HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
+    String a = "";
+    HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
     try {
         HttpGet request = new HttpGet("http://localhost:3000/getDeviceArray");
         request.addHeader("content-type", "application");
         HttpResponse response = httpClient.execute(request);
         String json_string = EntityUtils.toString(response.getEntity());
-        System.out.println(json_string);  
+        System.out.println(json_string); 
+        a = json_string;
         //handle response here...
     }catch (Exception ex) {
         //handle exception here
         System.out.println("GET ERROR");
     }
-*/  
+  
 	final int NUM_OF_ATTRIBUTE  = 1;
-    String a = "{\"allPackets\":[{\"14CC20C04DA2\":[{\"timeStamp\":1551190456277,\"RSSI\":-80,\"responsibleRouter\":\"AABBCCDDEEFF\"},"
-    		+ "{\"timeStamp\":1551190456232,\"RSSI\":-92,\"responsibleRouter\":\"AABBCCDDEEFF\"}]"
-    		+ ",\"64098070359B\":[{\"timeStamp\":1551190430912,\"RSSI\":-82,\"responsibleRouter\":\"AABBCCDDEEFF\"}]}"
-    		+ ",{\"14CC20C04DA2\":[{\"timeStamp\":1551190456277,\"RSSI\":-70,\"responsibleRouter\":\"AABBCCDDEEFF\"}]}]}";
+//    String a = "{\"allPackets\":[{\"14CC20C04DA2\":[{\"timeStamp\":1551190456277,\"RSSI\":-80,\"responsibleRouter\":\"AABBCCDDEEFF\"},"
+//    		+ "{\"timeStamp\":1551190456232,\"RSSI\":-92,\"responsibleRouter\":\"AABBCCDDEEFF\"}]"
+//    		+ ",\"64098070359B\":[{\"timeStamp\":1551190430912,\"RSSI\":-82,\"responsibleRouter\":\"AABBCCDDEEFF\"}]}"
+//    		+ ",{\"14CC20C04DA2\":[{\"timeStamp\":1551190456277,\"RSSI\":-70,\"responsibleRouter\":\"AABBCCDDEEFF\"}]}]}";
     HashMap<String, JSONArray> deviceMap = new HashMap<>();
 	JSONArray tmpArray;
 	JSONArray putArray;
@@ -82,6 +86,11 @@ public static void main(String[] args){
     	Set<String> deviceMapKeys = deviceMap.keySet();
     	HashMap<String, JSONObject> newDeviceMap = new HashMap<>();
     	for(String s :deviceMapKeys) {
+    		//try only one MAC address
+    		if(!s.equalsIgnoreCase("E8E8B75847A9")) {
+    			System.out.println(s);
+    			continue;
+    		}
     		JSONArray ss = deviceMap.get(s);
     		long newestTimeStamp = 0;
     		int newestIndex = 0;
@@ -105,12 +114,17 @@ public static void main(String[] args){
         String basePath = new File("").getAbsolutePath();
 		System.out.println();
 		//knn(basePath+"/knnData"+"/apl_train.txt",basePath+"/knnData"+"/apl_test.txt",1,2);
+		
 //	    Creating the array for prediction
 		List<TestRecord> predictList = new ArrayList<>();	
 		
 //		Initialize the array
 
 	    for(String s :deviceMapKeys) {
+    		//try only one MAC address
+    		if(!s.equalsIgnoreCase("E8E8B75847A9")) {
+    			continue;
+    		}
 	    	double[] da = new double[NUM_OF_ATTRIBUTE];
 	    	da[0] = 00;
 			da[0] = newDeviceMap.get(s).getDouble("RSSI");
@@ -119,24 +133,44 @@ public static void main(String[] args){
 
 		TestRecord[] predictArray = new TestRecord[ predictList.size() ];
 		predictList.toArray( predictArray );
-		knn(basePath+"/knnData"+"/apl_train.txt",predictArray,1,2);
-
+		JSONObject locations;
+		locations = knn(basePath+"/knnData"+"/apl_train.txt",predictArray,1,2);
+		System.out.println(locations);
+		// Upload to nodejs
+		try {
+            HttpPost request = new HttpPost("http://localhost:3000/deviceLocation");
+            StringEntity params =new StringEntity("Details="+locations.toString());
+            request.addHeader("content-type", "application/x-www-form-urlencoded");
+            request.setEntity(params);
+            HttpResponse response = httpClient.execute(request);
+            //handle response here...
+            HttpEntity entity = response.getEntity();
+            String content = EntityUtils.toString(entity);
+            System.out.println(content);
+        }catch (Exception ex) {
+            //handle exception here
+            System.out.println("POST LOCATION ERROR");
+        }
 	}
 	
-	public static void knn(String trainingFile, TestRecord[] testingSet, int K, int metricType){
+	public static JSONObject knn(String trainingFile, TestRecord[] testingSet, int K, int metricType){
 		//get the current time
 		final long startTime = System.currentTimeMillis();
+		JSONObject locations = new JSONObject();
+		locations.put("C4A", 0);
+		locations.put("C4B", 0);
+		locations.put("C4C", 0);
 		
 		// make sure the input arguments are legal
 		if(K <= 0){
 			System.out.println("K should be larger than 0!");
-			return;
+			return locations;
 		}
 		
 		// metricType should be within [0,2];
 		if(metricType > 2 || metricType <0){
 			System.out.println("metricType is not within the range [0,2]. Please try again later");
-			return;
+			return locations;
 		}
 		
 		
@@ -156,7 +190,7 @@ public static void main(String[] args){
 				metric = new EuclideanDistance();
 			else{
 				System.out.println("The entered metric_type is wrong!");
-				return;
+				return locations;
 			}
 			
 			//test those TestRecords one by one
@@ -166,6 +200,11 @@ public static void main(String[] args){
 				int classLabel = classify(neighbors);
 				System.out.println("Predicting "+testingSet[i].attributes[0]+" as class label "+classLabel);
 				testingSet[i].predictedLabel = classLabel; //assign the predicted label to TestRecord
+				System.out.println(classLabel);
+				int num = (int)locations.get(locLibrary[classLabel]);
+				num++;
+				locations.put(locLibrary[classLabel], num);
+				
 			}
 			
 			//calculate the accuracy
@@ -188,7 +227,7 @@ public static void main(String[] args){
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		return locations;
 	}
 	
 	// Find K nearest neighbors of testRecord within trainingSet 
