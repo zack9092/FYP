@@ -1,8 +1,12 @@
 package com.example.elly_clarkson.fyp;
 
+import android.Manifest;
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
@@ -12,12 +16,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.*;
 import android.widget.*;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.support.v7.widget.Toolbar;
 
 
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends FragmentActivity implements
         ViewPager.OnPageChangeListener, TabHost.OnTabChangeListener {
@@ -35,11 +42,16 @@ public class MainActivity extends FragmentActivity implements
     public static String studentID;
     public static boolean booked=false;
     public ImageButton logout;
+    public static WifiManager mWifiManager;
+    //public List<ScanResult> srList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getPermission();
         setContentView(R.layout.activity_main);
+        initService(this);
         logout=(ImageButton)findViewById(R.id.logout);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,18 +147,21 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onPageSelected(int arg0) {//arg0是表示你当前选中的页面位置Postion，这事件是在你页面跳转完毕的时候调用的。
+        //if(arg0==1)
+            //scanWifi();
         TabWidget widget = mTabHost.getTabWidget();
         int oldFocusability = widget.getDescendantFocusability();
         widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);//设置View覆盖子类控件而直接获得焦点
         mTabHost.setCurrentTab(arg0);//根据位置Postion设置当前的Tab
         widget.setDescendantFocusability(oldFocusability);//设置取消分割线
-        if(arg0==2)Fragment3.xxx();
+        //if(arg0==2)Fragment3.xxx();
     }
 
     @Override
     public void onTabChanged(String tabId) {//Tab改变的时候调用
         int position = mTabHost.getCurrentTab();
         vp.setCurrentItem(position);//把选中的Tab的位置赋给适配器，让它控制页面切换
+
     }
 
     public void onBackPressed() {
@@ -163,4 +178,24 @@ public class MainActivity extends FragmentActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
+
+    public void getPermission(){
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
+        }
+    }
+//Create an instance of WifiMAnager
+    private void initService(Context context){
+        mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    }
+//scanWifi function
+public void scanWifi(){
+    mWifiManager.startScan();
+    if(mWifiManager.isWifiEnabled()){
+        Fragment2.srList = mWifiManager.getScanResults();
+
+    }
+}
+
 }

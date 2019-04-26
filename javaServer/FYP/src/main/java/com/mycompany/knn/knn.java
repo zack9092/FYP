@@ -29,7 +29,7 @@ import org.json.JSONObject;
  * @author User
  */
 public class knn {
-    public static final String[] locLibrary= {"","","","","","","C4A","C5A","C5B",""};
+    public static final String[] locLibrary= {"","","","","","","","C5A","C5B",""};
 
     
 public static void main(String[] args){	

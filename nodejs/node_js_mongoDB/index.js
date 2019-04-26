@@ -91,6 +91,7 @@ app.get('/seats',function(req,res){
 app.get('/seatStatus',function(req,res){
 
 	console.log("/seatStatus");
+
 	MongoClient.connect(url,function(err,client){
 		var db=client.db('kwongkalai');
 		db.collection('seatStatus').findOne({"place_id":req.query.place_id},function(err,doc){
@@ -108,6 +109,7 @@ app.get('/seatRecommended',function(req,res){
 	var lowerFloor=[];
 	var upperFloor=[];
 	console.log("/seatRecommended");
+	console.log("Floor:" + req.query.floor);
 	findLowerFloor(req.query.floor,function(result){
 		lowerAndUpper['lowerFloor']=result;
 		//lowerFloor=result;
@@ -135,7 +137,7 @@ app.post('/booking',function(req,res,next){
 		findOne("seatStatus",criteria,function(doc){
 			console.log(doc);
 		//var newNumber=Number(doc["booking"])
-		var bookingPeople='{"booking":'+Number(doc["booking"]+1)+'}';
+		var bookingPeople='{"booking":'+(Number(doc["booking"])+Number(post_data["peopleNumber"]))+'}';
 		console.log(bookingPeople);
 		update("seatStatus",doc,bookingPeople,function(){});
 		res.json();
@@ -171,8 +173,8 @@ function findLowerFloor(floor,callback){
    		 		if (err) throw err;
 				//console.log(result);
 				for(var x in result){
-					if(Number(result[x].PeopleThere)/Number(result[x].MaxSeats)<0.8){
-						console.log(result[x].PeopleThere/result[x].MaxSeats);
+					if((Number(result[x].PeopleThere)+Number(result[x].booking))/Number(result[x].MaxSeats)<0.8){
+						console.log((Number(result[x].PeopleThere)+Number(result[x].booking))/result[x].MaxSeats);
 						array.push(result[x]);
 						if(array.length>=3){
 							client.close();
@@ -199,8 +201,8 @@ function findUpperFloor(floor,callback){
    		 		if (err) throw err;
 				//console.log(result);
 				for(var x in result){
-					if(Number(result[x].PeopleThere)/Number(result[x].MaxSeats)<0.8){
-						console.log(result[x].PeopleThere/result[x].MaxSeats);
+					if((Number(result[x].PeopleThere)+Number(result[x].booking))/Number(result[x].MaxSeats)<0.8){
+						console.log((Number(result[x].PeopleThere)+Number(result[x].booking))/result[x].MaxSeats);
 						array.push(result[x]);
 						if(array.length>=3){
 						client.close();
@@ -405,9 +407,9 @@ function findBookingNumber(callback){
 		console.log(result[x].place);
 		//for(key in result[x]){
 		if(temp[result[x].place]==null){
-			temp[result[x].place]=1;
+			temp[result[x].place]=result[x].peopleNumber;
 		}else{
-			temp[result[x].place]++;
+			temp[result[x].place]=temp[result[x].place]+result[x].peopleNumber;
 		}
 		if(x==result.length-1){
 			console.log(temp);

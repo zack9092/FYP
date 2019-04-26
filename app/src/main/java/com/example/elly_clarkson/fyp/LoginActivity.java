@@ -85,7 +85,8 @@ public class LoginActivity extends AppCompatActivity {
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable throwable) throws Exception {
-                Toast.makeText(LoginActivity.this, "Cannot connect to the server", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(LoginActivity.this, "Cannot connect to the server", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 throwable.printStackTrace();
             }}));
     }

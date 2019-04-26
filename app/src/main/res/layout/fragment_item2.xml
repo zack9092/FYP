@@ -3,33 +3,53 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-
+<!--
+<TableLayout
+    android:id="@+id/locationArea"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerRow1">
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    <View
+        android:layout_height="wrap_content" /></TableRow>
+<TableRow><View
         android:layout_height="1dp"
         android:background="#808080"
-        android:layout_width="match_parent"/>
+        android:layout_width="match_parent"/></TableRow>
 
-    <Spinner
+<TableRow
+    android:id="@+id/spinnerRow2"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"> <Spinner
         android:id="@+id/spinner2"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    <View
+        android:layout_height="wrap_content" /></TableRow>
+<TableRow><View
         android:layout_height="1dp"
         android:background="#808080"
         android:layout_width="match_parent"/>
-
+</TableRow>
+<TableRow android:id="@+id/textViewRow">
     <TextView
         android:id="@+id/yourLocation"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="20sp"/>
+        android:textSize="20sp"/></TableRow>
+</TableLayout>-->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    </LinearLayout>
 
     <TableLayout
         android:id="@+id/recommendArea"

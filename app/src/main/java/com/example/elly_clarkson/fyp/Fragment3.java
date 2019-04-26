@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -18,6 +19,8 @@ import android.widget.AdapterView.*;
 import org.json.JSONObject;
 
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -46,10 +49,12 @@ public class Fragment3 extends Fragment {
     JSONObject obj;
     ConstraintLayout constraintLayout;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item3, null);
         //testing = view.findViewById(R.id.testing);
+
         spinner = view.findViewById(R.id.spinner);
         frame=view.findViewById(R.id.frame);
 
@@ -72,28 +77,36 @@ public class Fragment3 extends Fragment {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             frame.removeAllViews();
             final ImageView imageView = new ImageView(getActivity());
-            System.out.println(""+spinner.getSelectedItem().toString().charAt(6)+ spinner2.getSelectedItem().toString().charAt(0));
+            System.out.println(""+spinner.getSelectedItem().toString().charAt(6)+ spinner2.getSelectedItem().toString().substring(0,spinner2.getSelectedItem().toString().indexOf('/')));
             String selectedBlock=""+spinner.getSelectedItem().toString().charAt(6);
-            String selectedFloor=""+spinner2.getSelectedItem().toString().charAt(0);
+            String selectedFloor=""+spinner2.getSelectedItem().toString().substring(0,spinner2.getSelectedItem().toString().indexOf('/'));
            // testing.setText("BLOCK"+selectedBlock+" "+floor[selectedFloor]);
             fileName=selectedBlock+""+selectedFloor;
+            //pathName="http://10.0.2.2:3000/ou/"+fileName+".png";
             pathName="http://10.0.2.2:3000/ou/"+fileName+".png";
             Picasso.get().load(pathName).into(imageView);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             frame.addView(imageView);
             System.out.println(pathName);
             ConstraintLayout constraintLayout = new ConstraintLayout(getContext());
-            ConstraintLayout.LayoutParams constraintLayoutParams = new ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT);
-            constraintLayout.setLayoutParams(constraintLayoutParams);
+            //ConstraintLayout.LayoutParams constraintLayoutParams = new ConstraintLayout.LayoutParams(
+                    //ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT);
+            //constraintLayout.setLayoutParams(constraintLayoutParams);
             constraintLayout.setId(View.generateViewId());
+
+
+
+
+
+
             frame.addView(constraintLayout);
             DatabaseAccess databaseAccess=DatabaseAccess.getInstance(getActivity());
             databaseAccess.open();
             Cursor cursor = databaseAccess.getSeatsLocation(fileName);
             while(cursor.moveToNext()){
                 ImageButton test=new ImageButton(getActivity());
-                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(40, 70);
+                //ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(40, 70);
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(getResources().getDisplayMetrics().widthPixels/10, (getResources().getDisplayMetrics().heightPixels/10)-10);
                 test.setLayoutParams(params);
                 test.setScaleType(ImageView.ScaleType.FIT_XY);
                 test.setBackgroundColor(Color.TRANSPARENT);
@@ -316,4 +329,5 @@ public class Fragment3 extends Fragment {
             }
         });
     };
+
 }
