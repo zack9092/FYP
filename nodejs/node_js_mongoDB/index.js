@@ -58,7 +58,10 @@ app.get('/getDeviceArray',function(req,res,next){
 	console.log('/getDeviceArray');
 	var tmp = {};
 	tmp["allPackets"] = allPackets;
-	allPackets = [];
+	if(req.query.key === "IT27"){
+	console.log("Good key, deleting allPackets array");
+		allPackets = [];
+	}
 //Store all device into an array
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(tmp));

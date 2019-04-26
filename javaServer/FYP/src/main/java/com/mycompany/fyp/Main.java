@@ -45,7 +45,7 @@ public static String bytesToHex(byte[] bytes) {
     return new String(hexChars);
 }
     public static void main(String[] args) throws PcapNativeException, NotOpenException {
-        final int SLEEP_TIME = 5; //seconds
+        final int SLEEP_TIME = 1; //seconds
         int mode = 1; // 1 for reading pcap , -1 for check booking
         /*
         //TESTING
