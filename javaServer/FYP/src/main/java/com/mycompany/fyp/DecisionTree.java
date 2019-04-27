@@ -35,7 +35,7 @@ public static void main(String[] args){
     String a = "";
     HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
     try {
-        HttpGet request = new HttpGet("http://localhost:3000/getDeviceArray?key=IT27");
+        HttpGet request = new HttpGet("http://it27fyp2019.appspot.com/getDeviceArray?key=IT27");
         request.addHeader("content-type", "application");
         HttpResponse response = httpClient.execute(request);
         String json_string = EntityUtils.toString(response.getEntity());
@@ -116,7 +116,7 @@ public static void main(String[] args){
     	System.out.println(locations);
 		// Upload to nodejs
 		try {
-            HttpPost request = new HttpPost("http://localhost:3000/deviceLocation");
+            HttpPost request = new HttpPost("http://it27fyp2019.appspot.com/deviceLocation");
             StringEntity params =new StringEntity("Details="+locations.toString());
             request.addHeader("content-type", "application/x-www-form-urlencoded");
             request.setEntity(params);

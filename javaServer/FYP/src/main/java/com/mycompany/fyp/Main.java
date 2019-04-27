@@ -199,7 +199,7 @@ public static String bytesToHex(byte[] bytes) {
             
             HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
             try {
-                HttpPost request = new HttpPost("http://localhost:3000/devicesPacket");
+                HttpPost request = new HttpPost("http://it27fyp2019.appspot.com/devicesPacket");
                 StringEntity params =new StringEntity("details="+toNodejs.toString());
                 request.addHeader("content-type", "application/x-www-form-urlencoded");
                 request.setEntity(params);
@@ -219,7 +219,7 @@ public static String bytesToHex(byte[] bytes) {
             	Thread.sleep(SLEEP_TIME * 1000); 
             	HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
                 try {
-                    HttpGet request = new HttpGet("http://localhost:3000/checkBooking");
+                    HttpGet request = new HttpGet("http://it27fyp2019.appspot.com/checkBooking");
                     request.addHeader("content-type", "application");
                     HttpResponse response = httpClient.execute(request);
                     //handle response here...
