@@ -31,7 +31,7 @@ private static final String PCAP_FILE_KEY
     = ReadPacketFile.class.getName() + ".pcapFile"; 
 private static String PCAP_FILE 
     = System.getProperty(PCAP_FILE_KEY, "C:/Users/User/Desktop/testing.pcap"); 
-private static String receiverMac = "AAAAAAAAAAAA";  
+private static String receiverMac = "00E02C312194";  
 //mac of the wireless adapter["00E02C310F37","00E02C312195","00E02F60EA64"]
 
 private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -45,7 +45,7 @@ public static String bytesToHex(byte[] bytes) {
     return new String(hexChars);
 }
     public static void main(String[] args) throws PcapNativeException, NotOpenException {
-        final int SLEEP_TIME = 1; //seconds
+        final int SLEEP_TIME = 5; //seconds
         int mode = 1; // 1 for reading pcap , -1 for check booking
         /*
         //TESTING

@@ -28,6 +28,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -83,7 +85,7 @@ public class Fragment3 extends Fragment {
            // testing.setText("BLOCK"+selectedBlock+" "+floor[selectedFloor]);
             fileName=selectedBlock+""+selectedFloor;
             //pathName="http://10.0.2.2:3000/ou/"+fileName+".png";
-            pathName="http://10.0.2.2:3000/ou/"+fileName+".png";
+            pathName="http://it27fyp2019.appspot.com/ou/"+fileName+".png";
             Picasso.get().load(pathName).into(imageView);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             frame.addView(imageView);
@@ -211,6 +213,7 @@ public class Fragment3 extends Fragment {
                         final float  max = obj.getInt("MaxSeats");
                         System.out.println(max);
                         final float peopleThere=obj.getInt("PeopleThere")+obj.getInt("booking");
+                        final String place=obj.getString("place");
                         System.out.println(peopleThere);
                         if(peopleThere/max>0.8) {
                             //button1.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
@@ -249,12 +252,44 @@ public class Fragment3 extends Fragment {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     // 左方按鈕方法
                                                     try{
-                                                    final String place=newJson.getString("place");
-                                                        String json="{\"userID\":\""+MainActivity.studentID+"\",\"place\":"+"\""+place +"\",\"BookingTime\":"+System.currentTimeMillis()+"}";
-                                                        System.out.println(json);
-                                                        JSONObject post_data=new JSONObject(json);
-                                                            booking(post_data);
-                                                    }catch(Exception e){System.out.println(e);}
+                                                        LayoutInflater li = LayoutInflater.from(getContext());
+                                                        View promptsView = li.inflate(R.layout.prompts, null);
+                                                        AlertDialog.Builder builder2 = new AlertDialog.Builder(getContext());
+                                                        builder2.setView(promptsView);
+                                                        final EditText userInput = (EditText) promptsView
+                                                                .findViewById(R.id.editTextDialogUserInput);
+                                                        builder2.setPositiveButton("OK", null)
+                                                                .setNegativeButton("Cancel", null).create();
+                                                        final AlertDialog about_dialog = builder2.create();
+                                                        about_dialog.show();
+                                                        Button positiveButton = about_dialog.getButton(BUTTON_POSITIVE);
+                                                        positiveButton.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                try{
+                                                                    if(Integer.parseInt(userInput.getText().toString())<=0||Integer.parseInt(userInput.getText().toString())>20){
+                                                                        System.out.println("Error");
+                                                                        userInput.setError("need>0 or <=20");
+                                                                    }
+                                                                    else{
+                                                                        System.out.println(userInput.getText());
+                                                                        String json="{\"userID\":\""+MainActivity.studentID+"\",\"place\":"+"\""+place +"\",\"peopleNumber\":"+Integer.parseInt(userInput.getText().toString())+",\"BookingTime\":"+System.currentTimeMillis()+"}";
+                                                                        System.out.println(json);
+                                                                        JSONObject post_data=new JSONObject(json);
+                                                                        booking(post_data);
+                                                                        about_dialog.dismiss();
+                                                                    };
+                                                                }catch(Exception e){
+                                                                    System.out.println(e);
+                                                                }
+                                                            }
+                                                        });
+
+
+
+                                                    }catch(Exception e){
+                                                        System.out.println(e);
+                                                    }
                                                 }
                                             })
                                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -281,11 +316,41 @@ public class Fragment3 extends Fragment {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     // 左方按鈕方法
                                                     try{
-                                                        final String place=newJson.getString("place");
-                                                        String json="{\"userID\":\""+MainActivity.studentID+"\",\"place\":"+"\""+place +"\",\"BookingTime\":"+System.currentTimeMillis()+"}";
-                                                        System.out.println(json);
-                                                        JSONObject post_data=new JSONObject(json);
-                                                        booking(post_data);
+                                                        LayoutInflater li = LayoutInflater.from(getContext());
+                                                        View promptsView = li.inflate(R.layout.prompts, null);
+                                                        AlertDialog.Builder builder2 = new AlertDialog.Builder(getContext());
+                                                        builder2.setView(promptsView);
+                                                        final EditText userInput = (EditText) promptsView
+                                                                .findViewById(R.id.editTextDialogUserInput);
+                                                        builder2.setPositiveButton("OK", null)
+                                                                .setNegativeButton("Cancel", null).create();
+                                                        final AlertDialog about_dialog = builder2.create();
+                                                        about_dialog.show();
+                                                        Button positiveButton = about_dialog.getButton(BUTTON_POSITIVE);
+                                                        positiveButton.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                try{
+                                                                    if(Integer.parseInt(userInput.getText().toString())<=0||Integer.parseInt(userInput.getText().toString())>20){
+                                                                        System.out.println("Error");
+                                                                        userInput.setError("need>0 or <=20");
+                                                                    }
+                                                                    else{
+                                                                        System.out.println(userInput.getText());
+                                                                        String json="{\"userID\":\""+MainActivity.studentID+"\",\"place\":"+"\""+place +"\",\"peopleNumber\":"+Integer.parseInt(userInput.getText().toString())+",\"BookingTime\":"+System.currentTimeMillis()+"}";
+                                                                        System.out.println(json);
+                                                                        JSONObject post_data=new JSONObject(json);
+                                                                        booking(post_data);
+                                                                        about_dialog.dismiss();
+                                                                    };
+                                                                }catch(Exception e){
+                                                                    System.out.println(e);
+                                                                }
+                                                            }
+                                                        });
+
+
+
                                                     }catch(Exception e){
                                                         System.out.println(e);
                                                     }

@@ -29,7 +29,7 @@ import org.json.JSONObject;
  * @author User
  */
 public class DecisionTree {
-	public static String[] routerMac = {"AAAAAAAAAAAA","AAAAAAAAAABB","ASD"};// ordered
+	public static String[] routerMac = {"0023CD00C51B","00E02C312194","00E02C310F37"};// ordered
 	public static String[] openarea = {"c9a","c9b"};// ordered   
 public static void main(String[] args){	
     String a = "";
