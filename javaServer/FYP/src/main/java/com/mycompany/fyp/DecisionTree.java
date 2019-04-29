@@ -32,6 +32,7 @@ public class DecisionTree {
 	public static String[] routerMac = {"0023CD00C51B","00E02C312194","00E02C310F37"};// ordered
 	public static String[] openarea = {"c9a","c9b"};// ordered   
 public static void main(String[] args){	
+	while(true) {
     String a = "";
     HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
     try {
@@ -79,7 +80,7 @@ public static void main(String[] args){
     		}
     	}
     
-//    	System.out.println(deviceMap);
+    	//System.out.println(deviceMap);
 
 //    	Filter out useless timestamp from same routerMac
     	Set<String> deviceMapKeys = deviceMap.keySet();
@@ -87,23 +88,23 @@ public static void main(String[] args){
     	for(String s :deviceMapKeys) {
     		ArrayList<JSONObject> newEachDevice = new ArrayList<>();
     		//try only one MAC address
-    		if(!s.equalsIgnoreCase("E8E8B75847A9")) {
+    		if(!s.equalsIgnoreCase("E8E8B75847A9") && !s.equalsIgnoreCase("482ca072ca66") && !s.equalsIgnoreCase("404e36ce4ef9")) {
     			//System.out.println(s);
     			continue;
     		}
         	for(String rMac : routerMac) {  			
     			JSONArray ss = deviceMap.get(s);
-    			long newestTimeStamp = 0;
-    			int newestIndex = -1;
+    			int bestRSSI = -100;
+    			int bestIndex = -1;
     			JSONObject obj;
     			for(int j=0;j<ss.length();j++) {
     				obj = ss.getJSONObject(j);
-    				if(newestTimeStamp < Long.parseLong(obj.get("timeStamp")+"") && obj.getString("responsibleRouter").equalsIgnoreCase(rMac)) { // add code to do more filter
-    				newestIndex = j;
+    				if(bestRSSI < obj.getInt("RSSI") && obj.getString("responsibleRouter").equalsIgnoreCase(rMac)) { // add code to do more filter
+    				bestIndex = j;
     				}
     			}
-    			if(newestIndex!=-1) {
-    				obj = ss.getJSONObject(newestIndex);
+    			if(bestIndex!=-1) {
+    				obj = ss.getJSONObject(bestIndex);
     				newEachDevice.add(obj);
     			}
     		}
@@ -113,7 +114,7 @@ public static void main(String[] args){
 //    	format all records to the prediction array format
     	JSONObject locations;
     	locations = decisionTree(newDeviceList);
-    	System.out.println(locations);
+    	System.out.println("predict : "+locations);
 		// Upload to nodejs
 		try {
             HttpPost request = new HttpPost("http://it27fyp2019.appspot.com/deviceLocation");
@@ -129,6 +130,10 @@ public static void main(String[] args){
             //handle exception here
             System.out.println("POST LOCATION ERROR");
         }
+		try {
+		Thread.sleep(30*1000);
+		}catch(Exception e) {}
+	}
 }
 
 public static JSONObject decisionTree(ArrayList<ArrayList<JSONObject>> dataset) {
@@ -146,13 +151,9 @@ public static JSONObject decisionTree(ArrayList<ArrayList<JSONObject>> dataset) 
 		}
 		// Do prediction on one data
 		System.out.println(rssiArray[0]+" "+rssiArray[1]+" "+rssiArray[2]);
-		if(rssiArray[0]<-35 && rssiArray[0]>-64 && rssiArray[1]<-27 && rssiArray[1]>-46 && rssiArray[2]<-49 && rssiArray[2]>-69){//Check for sofa
+		if(rssiArray[0]<-35 && rssiArray[0]>-60 && rssiArray[1]<-22 && rssiArray[1]>-50 && rssiArray[2]<-30 && rssiArray[2]>-61){//Check for sofa
 			System.out.println("Sofa");
 			sittingArea[0]++;
-		}else
-		if(rssiArray[0]<-51 && rssiArray[0]>-68 && ((rssiArray[1]<-60 && rssiArray[1]>-79) || rssiArray[1] == 100) && rssiArray[2]<-46 && rssiArray[2]>-59){
-			System.out.println("orange");
-			sittingArea[1]++;
 		}else {
 			System.out.println("other");
 		}
