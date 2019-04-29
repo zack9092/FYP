@@ -45,7 +45,7 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 public class Fragment2 extends Fragment {
 
     final String[] block ={"Block A", "Block B","Block C" };
-    final String[] floor = {"","0/F","1/F", "2/F", "3/F", "4/F", "5/F", "6/F", "7/F", "8/F", "9/F", "10/F"};
+    final String[] floor = {"0/F","1/F", "2/F", "3/F", "4/F", "5/F", "6/F", "7/F", "8/F", "9/F", "10/F"};
      Spinner spinner;
      Spinner spinner2;
     char blockPosition;
@@ -61,7 +61,6 @@ public class Fragment2 extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_item2, null);
         LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
 
@@ -75,13 +74,13 @@ public class Fragment2 extends Fragment {
                 android.R.layout.simple_spinner_dropdown_item,
                 block);
         spinner.setAdapter(blockList);
-
+/*
          temp = new Random().nextInt(3);
         System.out.println("Random1:  "+temp);
         temp2 = new Random().nextInt(10)+1;
 
         System.out.println("Random2: "+temp2);
-
+*/
        // spinner2=view.findViewById(R.id.spinner2);
         spinner2=new Spinner(this.getContext());
         ArrayAdapter<String> floorList = new ArrayAdapter<>(this.getActivity(),
@@ -108,11 +107,11 @@ public class Fragment2 extends Fragment {
     linearLayout.addView(spinner2);
         linearLayout.addView(line2);
 
-        spinner.setSelection(temp);
-        spinner2.setSelection(temp2);
+      //  spinner.setSelection(temp);
+       // spinner2.setSelection(temp2);
        // textView =  (TextView)view.findViewById(R.id.yourLocation);
-        textView=new TextView(this.getContext());
-        linearLayout.addView(textView);
+
+
         recommendArea=view.findViewById(R.id.recommendArea);
         //locationArea=view.findViewById(R.id.locationArea);
 
@@ -134,25 +133,24 @@ public class Fragment2 extends Fragment {
         String selectedBlock = "" + spinner.getSelectedItem().toString().charAt(6);
         String selectedFloor = "" + spinner2.getSelectedItem().toString().substring(0,spinner2.getSelectedItem().toString().indexOf('/'));
 
-        yourLocation = selectedBlock + "" + selectedFloor;
-        textView.setText(yourLocation);
-        System.out.print(yourLocation);
-
+        //yourLocation = selectedBlock + "" + selectedFloor;
+       // textView.setText(yourLocation);
+        //System.out.print(yourLocation);
 
         seatRecommended(Integer.parseInt(selectedFloor));
         //testing();
-
         return view;
     }
 
     public class onItemSelectedListener implements AdapterView.OnItemSelectedListener {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
             String selectedBlock=""+spinner.getSelectedItem().toString().charAt(6);
             String selectedFloor = "" + spinner2.getSelectedItem().toString().substring(0,spinner2.getSelectedItem().toString().indexOf('/'));
 
             //blockPosition = (char) ('A' + position);
             yourLocation=selectedBlock+""+selectedFloor;
-            textView.setText(yourLocation);
+
         }
         public void onNothingSelected(AdapterView<?> parent) {
         }
@@ -172,7 +170,7 @@ public class Fragment2 extends Fragment {
 
                 yourLocation = selectedBlock + "" + selectedFloor;
                // yourLocation = selectedBlock + "" + floorPosition;
-                textView.setText(yourLocation);
+
                 seatRecommended(Integer.parseInt(selectedFloor));
 
         }
@@ -387,13 +385,13 @@ public class Fragment2 extends Fragment {
         }
     }
 
-    @Override
+  /*  @Override
    public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             getFragmentManager().beginTransaction().detach(this).attach(this).commit();
         }
-    }
+    }*/
 
 
 

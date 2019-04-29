@@ -72,9 +72,16 @@ app.post('/deviceLocation',function(req,res,next){
 	var tmp = req.body;
 	var newJson = JSON.parse(tmp['Details']);
 	console.log(newJson);
+	
+	for(key in newJson){
+		update("seatStatus",JSON.parse('{"place":"'+key+'"}'),'{"PeopleThere":'+newJson[key]+'}',function(){});
+	}
+	
+	
     	res.setHeader('Content-Type', 'text/plain');
 	res.end("Success : Device location posted");
 });
+
 
 
 app.get('/seats',function(req,res){
@@ -326,7 +333,9 @@ function insert(collection,data,callback){
 };
 
 function update(collection,criteria,newData,callback){
+	console.log(newData);
 	console.log('{"$set":'+newData+'}');
+	console.log(JSON.parse('{"$set":'+JSON.stringify(newData)+'}'));
 	var set = JSON.parse('{"$set":'+newData+'}');
 	console.log("AAasdadsAA");
 	console.log(set);
@@ -447,6 +456,6 @@ function updateBooking(jsonObject){
 });
 }
 
-app.listen(3000||process.env.PORT,function(){
+app.listen(8080||process.env.PORT,function(){
 				console.log("Connected to MongoDB Server");
 			});
