@@ -26,12 +26,12 @@ public class Main {
 
      
 private static int COUNT = 1000; 
-private static final long UPLOAD_RATE_SECONDS = 10; // how many seconds until consider a old file
+private static final long UPLOAD_RATE_SECONDS = 15; // how many seconds until consider a old file
 private static final String PCAP_FILE_KEY 
     = ReadPacketFile.class.getName() + ".pcapFile"; 
 private static String PCAP_FILE 
     = System.getProperty(PCAP_FILE_KEY, "C:/Users/User/Desktop/testing.pcap"); 
-private static String receiverMac = "00E02C312194";  
+private static String receiverMac = "00E02C310F37";  
 //mac of the wireless adapter["00E02C310F37","00E02C312195","00E02F60EA64"]
 
 private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -112,15 +112,15 @@ public static String bytesToHex(byte[] bytes) {
                     System.out.println(PCAP_FILE);
                     long timeDifference = (currentSeconds - fileSceonds);
                     System.out.println("The time difference between the pcap file and now is: "+timeDifference);
-//                    if(timeDifference > UPLOAD_RATE_SECONDS) {
-//                    	System.out.println("Bad file");
-//                		if(fileEntry[i].delete()){
-//                			System.out.println(fileEntry[i].getName() + " is deleted!");
-//                		}else{
-//                			System.out.println("Delete operation is failed.");
-//                		}
-//                    	continue;
-//                    }
+                    if(timeDifference > UPLOAD_RATE_SECONDS) {
+                    	System.out.println("Bad file");
+                		if(fileEntry[i].delete()){
+                			System.out.println(fileEntry[i].getName() + " is deleted!");
+                		}else{
+                			System.out.println("Delete operation is failed.");
+                		}
+                    	continue;
+                    }
                     //start processing packets
                     try { 
                       handle = Pcaps.openOffline(PCAP_FILE, PcapHandle.TimestampPrecision.NANO); 
@@ -154,7 +154,9 @@ public static String bytesToHex(byte[] bytes) {
                       } catch (EOFException e) { 
                         System.out.println("EOF"); 
                         break; 
-                      } 
+                      } catch (Exception e) {
+                    	  
+                      }
                     } 
 
                     
