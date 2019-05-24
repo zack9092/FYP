@@ -6,8 +6,10 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,12 +60,14 @@ public class Fragment2 extends Fragment {
     public static List<ScanResult> srList;
     int temp;
     int temp2;
+    SwipeRefreshLayout swipeLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item2, null);
         LinearLayout linearLayout = view.findViewById(R.id.linearLayout);
-
+        swipeLayout = view.findViewById(R.id.laySwipe);
+        swipeLayout.setOnRefreshListener(onSwipeToRefresh);
         linearLayout.removeAllViews();
         if(srList!=null){
             showList();
@@ -162,6 +166,7 @@ public class Fragment2 extends Fragment {
                     return;
                 }
                 //floorPosition=position;
+            /*
                 String selectedBlock = "" + spinner.getSelectedItem().toString().charAt(6);
                 String selectedFloor = "" + spinner2.getSelectedItem().toString().substring(0,spinner2.getSelectedItem().toString().indexOf('/'));
 
@@ -172,7 +177,8 @@ public class Fragment2 extends Fragment {
                // yourLocation = selectedBlock + "" + floorPosition;
 
                 seatRecommended(Integer.parseInt(selectedFloor));
-
+*/
+            update();
         }
         public void onNothingSelected(AdapterView<?> parent) {
         }
@@ -402,4 +408,29 @@ public class Fragment2 extends Fragment {
         spinner.setSelection(temp,true);
         spinner2.setSelection(temp2,true);
     }
+
+    public void update(){
+        String selectedBlock = "" + spinner.getSelectedItem().toString().charAt(6);
+        String selectedFloor = "" + spinner2.getSelectedItem().toString().substring(0,spinner2.getSelectedItem().toString().indexOf('/'));
+        System.out.print(spinner.getSelectedItem().toString());
+        System.out.println(spinner2.getSelectedItem().toString());
+        yourLocation = selectedBlock + "" + selectedFloor;
+        // yourLocation = selectedBlock + "" + floorPosition;
+        seatRecommended(Integer.parseInt(selectedFloor));
+    }
+
+    private SwipeRefreshLayout.OnRefreshListener onSwipeToRefresh = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            swipeLayout.setRefreshing(true);
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    update();
+                    swipeLayout.setRefreshing(false);
+                }
+            }, 1000);
+        }
+    };
 }
